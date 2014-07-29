@@ -11,7 +11,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140729085951) do
+ActiveRecord::Schema.define(version: 20140729092140) do
+
+  create_table "statements", force: true do |t|
+    t.integer  "stock_id",   null: false
+    t.integer  "year",       null: false
+    t.integer  "quarter",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "statements", ["quarter"], name: "index_statements_on_quarter"
+  add_index "statements", ["stock_id"], name: "index_statements_on_stock_id"
+  add_index "statements", ["year"], name: "index_statements_on_year"
 
   create_table "stocks", force: true do |t|
     t.string   "ticker",     null: false
