@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140729100522) do
+ActiveRecord::Schema.define(version: 20140730030908) do
 
   create_table "statement_items", force: true do |t|
     t.string   "name",                     null: false
@@ -20,6 +20,18 @@ ActiveRecord::Schema.define(version: 20140729100522) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "statement_items", ["level"], name: "index_statement_items_on_level"
+  add_index "statement_items", ["name"], name: "index_statement_items_on_name"
+  add_index "statement_items", ["parent_statement_item_id"], name: "index_statement_items_on_parent_statement_item_id"
+
+  create_table "statement_items_statements", id: false, force: true do |t|
+    t.integer "statement_id",      null: false
+    t.integer "statement_item_id", null: false
+  end
+
+  add_index "statement_items_statements", ["statement_id", "statement_item_id"], name: "index_statement_id_and_statement_item_id"
+  add_index "statement_items_statements", ["statement_item_id", "statement_id"], name: "index_statement_item_id_and_statement_id"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false
@@ -38,5 +50,7 @@ ActiveRecord::Schema.define(version: 20140729100522) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "stocks", ["ticker"], name: "index_stocks_on_ticker"
 
 end
