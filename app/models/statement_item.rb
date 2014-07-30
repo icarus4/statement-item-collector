@@ -12,15 +12,12 @@
 
 class StatementItem < ActiveRecord::Base
   # self join
-  has_many :child_statement_items, class_name: 'StatementItem', foreign_key: 'parent_statement_item_id'
-  belongs_to :parent_statement_item, class_name: 'StatementItem'
+  # has_many :child_statement_items, class_name: 'StatementItem', foreign_key: 'parent_statement_item_id'
+  # belongs_to :parent_statement_item, class_name: 'StatementItem'
 
-  has_and_belongs_to_many :statements
+  # replace self join by gem of closure_tree
+  acts_as_tree
 
+  belongs_to :statement
 
-  def descendants
-    if self.child_statement_items.exist?
-
-    end
-  end
 end
