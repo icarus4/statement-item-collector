@@ -50,4 +50,16 @@ group :development do
   gem "annotate"
 end
 
+group :development, :test do
+  gem 'rspec-rails', '~> 2.13.1'
+  gem 'guard-rspec', '2.5.0'
+end
+
+
 gem 'bootstrap-sass', '~> 3.2.0'
+
+gem 'closure_tree'
+
+gem 'hirb-unicode'
+
+gem 'awesome_print'
