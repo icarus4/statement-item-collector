@@ -12,5 +12,5 @@
 
 class Statement < ActiveRecord::Base
   belongs_to :stock
-  has_many :statement_items
+  has_and_belongs_to_many :statement_items, join_table: :statement_items_statements
 end

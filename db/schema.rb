@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140730095910) do
+ActiveRecord::Schema.define(version: 20140731080837) do
 
   create_table "statement_item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -23,8 +23,7 @@ ActiveRecord::Schema.define(version: 20140730095910) do
   add_index "statement_item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
 
   create_table "statement_items", force: true do |t|
-    t.string   "name",                     null: false
-    t.integer  "parent_statement_item_id"
+    t.string   "name",         null: false
     t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -35,7 +34,6 @@ ActiveRecord::Schema.define(version: 20140730095910) do
   add_index "statement_items", ["level"], name: "index_statement_items_on_level"
   add_index "statement_items", ["name"], name: "index_statement_items_on_name"
   add_index "statement_items", ["parent_id"], name: "index_statement_items_on_parent_id"
-  add_index "statement_items", ["parent_statement_item_id"], name: "index_statement_items_on_parent_statement_item_id"
   add_index "statement_items", ["statement_id"], name: "index_statement_items_on_statement_id"
 
   create_table "statement_items_statements", id: false, force: true do |t|
@@ -44,7 +42,9 @@ ActiveRecord::Schema.define(version: 20140730095910) do
   end
 
   add_index "statement_items_statements", ["statement_id", "statement_item_id"], name: "index_statement_id_and_statement_item_id"
+  add_index "statement_items_statements", ["statement_id"], name: "index_statement_items_statements_on_statement_id"
   add_index "statement_items_statements", ["statement_item_id", "statement_id"], name: "index_statement_item_id_and_statement_id"
+  add_index "statement_items_statements", ["statement_item_id"], name: "index_statement_items_statements_on_statement_item_id"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false
