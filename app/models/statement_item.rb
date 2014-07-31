@@ -8,6 +8,8 @@
 #  level                    :integer
 #  created_at               :datetime
 #  updated_at               :datetime
+#  parent_id                :integer
+#  statement_id             :integer
 #
 
 class StatementItem < ActiveRecord::Base
