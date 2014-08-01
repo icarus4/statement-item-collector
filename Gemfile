@@ -63,3 +63,7 @@ gem 'closure_tree'
 gem 'hirb-unicode'
 
 gem 'awesome_print'
+
+gem 'rest-client'
+
+gem 'iconv'
