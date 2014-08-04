@@ -1,4 +1,4 @@
-class ComparisonsController < ApplicationController
+class ParsersController < ApplicationController
 
   def index
   end

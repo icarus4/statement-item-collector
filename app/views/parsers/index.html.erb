@@ -1,4 +1,4 @@
-<%= form_tag({controller: 'comparisons', action: 'search'}, method: 'get') do %>
+<%= form_tag({controller: 'parsers', action: 'search'}, method: 'get') do %>
   <%= label_tag(:ticker, "輸入股號:") %>
   <%= text_field_tag(:ticker) %>
   <%= submit_tag("Search") %>
