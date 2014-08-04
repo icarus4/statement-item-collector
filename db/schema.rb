@@ -11,18 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140731080837) do
+ActiveRecord::Schema.define(version: 20140804032703) do
 
-  create_table "statement_item_hierarchies", id: false, force: true do |t|
+  create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
     t.integer "descendant_id", null: false
     t.integer "generations",   null: false
   end
 
-  add_index "statement_item_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "statement_item_anc_desc_udx", unique: true
-  add_index "statement_item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
+  add_index "item_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "statement_item_anc_desc_udx", unique: true
+  add_index "item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
 
-  create_table "statement_items", force: true do |t|
+  create_table "items", force: true do |t|
     t.string   "name",         null: false
     t.integer  "level"
     t.datetime "created_at"
@@ -31,20 +31,20 @@ ActiveRecord::Schema.define(version: 20140731080837) do
     t.integer  "statement_id"
   end
 
-  add_index "statement_items", ["level"], name: "index_statement_items_on_level"
-  add_index "statement_items", ["name"], name: "index_statement_items_on_name"
-  add_index "statement_items", ["parent_id"], name: "index_statement_items_on_parent_id"
-  add_index "statement_items", ["statement_id"], name: "index_statement_items_on_statement_id"
+  add_index "items", ["level"], name: "index_items_on_level"
+  add_index "items", ["name"], name: "index_items_on_name"
+  add_index "items", ["parent_id"], name: "index_items_on_parent_id"
+  add_index "items", ["statement_id"], name: "index_items_on_statement_id"
 
-  create_table "statement_items_statements", id: false, force: true do |t|
-    t.integer "statement_id",      null: false
-    t.integer "statement_item_id", null: false
+  create_table "items_statements", id: false, force: true do |t|
+    t.integer "statement_id", null: false
+    t.integer "item_id",      null: false
   end
 
-  add_index "statement_items_statements", ["statement_id", "statement_item_id"], name: "index_statement_id_and_statement_item_id"
-  add_index "statement_items_statements", ["statement_id"], name: "index_statement_items_statements_on_statement_id"
-  add_index "statement_items_statements", ["statement_item_id", "statement_id"], name: "index_statement_item_id_and_statement_id"
-  add_index "statement_items_statements", ["statement_item_id"], name: "index_statement_items_statements_on_statement_item_id"
+  add_index "items_statements", ["item_id", "statement_id"], name: "index_statement_item_id_and_statement_id"
+  add_index "items_statements", ["item_id"], name: "index_items_statements_on_item_id"
+  add_index "items_statements", ["statement_id", "item_id"], name: "index_statement_id_and_statement_item_id"
+  add_index "items_statements", ["statement_id"], name: "index_items_statements_on_statement_id"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false

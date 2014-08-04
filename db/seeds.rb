@@ -10,12 +10,12 @@ s0 = Stock.create(ticker: '2330')
 s1 = Stock.create(ticker: '2331')
 
 (1..4).to_a.each do |q|
-  s0.statements.create(year: 2014, quarter: q)
-  s1.statements.create(year: 2014, quarter: q)
+  st0 = s0.statements.create(year: 2014, quarter: q)
+  st1 = s1.statements.create(year: 2014, quarter: q)
 end
 
 
-root = StatementItem.create(name: 'common')
+root = Item.create(name: 'common')
 
 bs = root.children.create(name: '資產負債表')
 is = root.children.create(name: '綜合損益表')

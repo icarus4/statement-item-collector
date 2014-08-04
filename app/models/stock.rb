@@ -11,5 +11,5 @@
 
 class Stock < ActiveRecord::Base
   has_many :statements
-  # has_many :statement_items, through: :statements
+  # has_many :items, through: :statements
 end
