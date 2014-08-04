@@ -2,11 +2,13 @@
 #
 # Table name: stocks
 #
-#  id         :integer          not null, primary key
-#  ticker     :string(255)      not null
-#  created_at :datetime
-#  updated_at :datetime
-#  country    :string(255)      default("tw"), not null
+#  id           :integer          not null, primary key
+#  ticker       :string(255)      not null
+#  created_at   :datetime
+#  updated_at   :datetime
+#  country      :string(255)      default("tw"), not null
+#  category     :string(255)
+#  sub_category :string(255)
 #
 
 class Stock < ActiveRecord::Base

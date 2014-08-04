@@ -12,8 +12,8 @@ s0.save
 s1.save
 
 (1..4).to_a.each do |q|
-  st0 = s0.statements.create(year: 2014, quarter: q)
-  st1 = s1.statements.create(year: 2014, quarter: q)
+  st0 = s0.statements.create(year: 2014, quarter: q, s_type: 'ifrs')
+  st1 = s1.statements.create(year: 2014, quarter: q, s_type: 'ifrs')
 end
 
 
@@ -35,8 +35,8 @@ tmp.children.create(name: '研究發展費用').children.create(name: '研究發
 tmp.children.create(name: '營業費用合計')
 
 
-# i = Item.find 4
-# st1 = Statement.find 1
-# st2 = Statement.find 2
-# i.statements << st1
-# i.statements << st2
+i = Item.find 4
+st1 = Statement.find 1
+st2 = Statement.find 2
+i.statements << st1
+i.statements << st2
