@@ -19,6 +19,7 @@ class Item < ActiveRecord::Base
   # replace self join by gem of closure_tree
   acts_as_tree dependent: :destroy
 
-  has_and_belongs_to_many :statements, join_table: :items_statements
+  has_many :item_statement_pairs
+  has_many :statements, through: :item_statement_pairs
 
 end

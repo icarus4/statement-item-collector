@@ -32,3 +32,9 @@ tmp.children.create(name: '管理費用').children.create(name: '管理費用合
 tmp.children.create(name: '研究發展費用').children.create(name: '研究發展費用合計')
 tmp.children.create(name: '營業費用合計')
 
+
+i = Item.find 2
+st1 = Statement.find 1
+st2 = Statement.find 2
+i.statements << st1
+i.statements << st2
