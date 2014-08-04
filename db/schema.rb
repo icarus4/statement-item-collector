@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140804044828) do
+ActiveRecord::Schema.define(version: 20140804092247) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -59,13 +59,17 @@ ActiveRecord::Schema.define(version: 20140804044828) do
   add_index "statements", ["year"], name: "index_statements_on_year"
 
   create_table "stocks", force: true do |t|
-    t.string   "ticker",                    null: false
+    t.string   "ticker",                      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "country",    default: "tw", null: false
+    t.string   "country",      default: "tw", null: false
+    t.string   "category"
+    t.string   "sub_category"
   end
 
+  add_index "stocks", ["category"], name: "index_stocks_on_category"
   add_index "stocks", ["country"], name: "index_stocks_on_country"
+  add_index "stocks", ["sub_category"], name: "index_stocks_on_sub_category"
   add_index "stocks", ["ticker"], name: "index_stocks_on_ticker"
 
 end
