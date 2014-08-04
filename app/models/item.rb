@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: statement_items
+# Table name: items
 #
 #  id           :integer          not null, primary key
 #  name         :string(255)      not null
