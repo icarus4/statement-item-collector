@@ -25,18 +25,30 @@ class Item < ActiveRecord::Base
   validate  :name_should_be_unique_within_siblings
   validates :has_value, inclusion: {in: [true, false]}
 
+  # FIXME: We skip this validator at early stage. We have to enable this validator soon
+  # validate  :up_id_and_down_id_should_presence_if_any_sibling_exists
+
 
   protected
 
   def name_should_be_unique_within_siblings
-    self.siblings.each do |sibling|
-      if sibling.name == self.name and sibling.has_value == self.has_value
+    siblings.each do |sibling|
+      if sibling.name == name and sibling.has_value == has_value
         errors.add(:name, 'is already existed within siblins')
       end
     end
   end
 
-  # replace self join by gem of closure_tree
+  def up_id_and_down_id_should_presence_if_any_sibling_exists
+    if siblings.present?
+      if up_id.nil? and down_id.nil?
+        errors.add(:up_id, 'up_id should be set if item has sibling(s)')
+        errors.add(:down_id, 'down_id should be set if item has sibling(s)')
+      end
+    end
+  end
+
+  # acts_as_tree is to replace self join by gem of closure_tree
   # acts_as_tree should be put at bottom of class
   acts_as_tree dependent: :destroy
 
