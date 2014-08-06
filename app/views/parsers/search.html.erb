@@ -1,7 +1,9 @@
-<p>YO</p>
-
-
-<% @s.is_table_nodeset.css('tbody>tr').each do |s| %>
-  <p><%= s.content %></p>
-  <div style="margin: 20px"></div>
+<% if @s.result.nil? %>
+  <div class="alert alert-danger">查無資料</div>
+<% else %>
+  <div class="alert alert success"><%= @s.inspect %></div>
 <% end %>
+<%# @s.is_table_nodeset.css('tbody>tr').each do |s| %>
+<!--   <p><%#= s.content %></p>
+  <div style="margin: 20px"></div> -->
+<%# end %>
