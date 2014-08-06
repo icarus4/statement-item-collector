@@ -8,7 +8,6 @@ class ParsersController < ApplicationController
     year    = params[:year].to_i
     quarter = params[:quarter].to_i
 
-    # f = open_big5_html_file('2459-2014-Q1.html')
     @s = TwseWebStatement.new(ticker, year, quarter)
     @s.parse
   end
@@ -40,13 +39,31 @@ class TwseWebStatement
   def parse
     html_file = get_html_file(@ticker, @year, @quarter)
     @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
-    parse_twse_html if @market == 'tw'
+    get_tables
+    parse_tables
   end
 
 
   private
 
-  def parse_twse_html
+  def parse_tables
+    @bs_table_nodeset.css('tr').each do |tr|
+      name = _get_tr_item_name(tr)
+      level = _get_tr_item_level(tr)
+    end
+  end
+
+  def _get_tr_item_name(tr)
+    raise 'invalid input (should be Nokogiri nodeset)' unless tr.is_a?(Nokogiri::XML::Element)
+    tr.children[0].content.strip.gsub(/[　 ]/, '') # 移除前後全/半型空白
+  end
+
+  def _get_tr_item_level(tr)
+    raise 'invalid input (should be Nokogiri nodeset)' unless tr.is_a?(Nokogiri::XML::Element)
+
+  end
+
+  def get_tables
     @result = @doc
 
     # check whether data is existed or not
