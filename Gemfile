@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.1'
+gem 'rails', '~> 4.1.4'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -42,7 +42,6 @@ gem 'nokogiri'
 
 gem 'simple_form'
 
-gem 'guard-livereload'
 
 group :development do
   gem "better_errors"
@@ -51,8 +50,11 @@ group :development do
 end
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.13.1'
-  gem 'guard-rspec', '2.5.0'
+  gem 'rspec-rails', '~> 3.0.0'
+  gem 'guard-rspec', '~> 4.2.10'
+  gem 'guard-livereload'
+  gem 'spring-commands-rspec', '~> 1.0.2'
+  gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
 
 
@@ -63,3 +65,7 @@ gem 'closure_tree'
 gem 'hirb-unicode'
 
 gem 'awesome_print'
+
+gem 'rest-client'
+
+gem 'iconv'

@@ -11,40 +11,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140731080837) do
+ActiveRecord::Schema.define(version: 20140805083344) do
 
-  create_table "statement_item_hierarchies", id: false, force: true do |t|
+  create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
     t.integer "descendant_id", null: false
     t.integer "generations",   null: false
   end
 
-  add_index "statement_item_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "statement_item_anc_desc_udx", unique: true
-  add_index "statement_item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
+  add_index "item_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "statement_item_anc_desc_udx", unique: true
+  add_index "item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
 
-  create_table "statement_items", force: true do |t|
-    t.string   "name",         null: false
+  create_table "item_statement_pairs", force: true do |t|
+    t.integer "item_id",      null: false
+    t.integer "statement_id", null: false
+  end
+
+  add_index "item_statement_pairs", ["item_id", "statement_id"], name: "index_item_statement_pairs_on_item_id_and_statement_id", unique: true
+  add_index "item_statement_pairs", ["item_id"], name: "index_item_statement_pairs_on_item_id"
+  add_index "item_statement_pairs", ["statement_id", "item_id"], name: "index_item_statement_pairs_on_statement_id_and_item_id", unique: true
+  add_index "item_statement_pairs", ["statement_id"], name: "index_item_statement_pairs_on_statement_id"
+
+  create_table "items", force: true do |t|
+    t.string   "name",       null: false
     t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "parent_id"
-    t.integer  "statement_id"
+    t.boolean  "has_value"
+    t.integer  "up_id"
+    t.integer  "down_id"
   end
 
-  add_index "statement_items", ["level"], name: "index_statement_items_on_level"
-  add_index "statement_items", ["name"], name: "index_statement_items_on_name"
-  add_index "statement_items", ["parent_id"], name: "index_statement_items_on_parent_id"
-  add_index "statement_items", ["statement_id"], name: "index_statement_items_on_statement_id"
-
-  create_table "statement_items_statements", id: false, force: true do |t|
-    t.integer "statement_id",      null: false
-    t.integer "statement_item_id", null: false
-  end
-
-  add_index "statement_items_statements", ["statement_id", "statement_item_id"], name: "index_statement_id_and_statement_item_id"
-  add_index "statement_items_statements", ["statement_id"], name: "index_statement_items_statements_on_statement_id"
-  add_index "statement_items_statements", ["statement_item_id", "statement_id"], name: "index_statement_item_id_and_statement_id"
-  add_index "statement_items_statements", ["statement_item_id"], name: "index_statement_items_statements_on_statement_item_id"
+  add_index "items", ["down_id"], name: "index_items_on_down_id"
+  add_index "items", ["has_value"], name: "index_items_on_has_value"
+  add_index "items", ["level"], name: "index_items_on_level"
+  add_index "items", ["name"], name: "index_items_on_name"
+  add_index "items", ["parent_id"], name: "index_items_on_parent_id"
+  add_index "items", ["up_id"], name: "index_items_on_up_id"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false
@@ -52,20 +56,26 @@ ActiveRecord::Schema.define(version: 20140731080837) do
     t.integer  "quarter",    null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "s_type"
   end
 
   add_index "statements", ["quarter"], name: "index_statements_on_quarter"
+  add_index "statements", ["s_type"], name: "index_statements_on_s_type"
   add_index "statements", ["stock_id"], name: "index_statements_on_stock_id"
   add_index "statements", ["year"], name: "index_statements_on_year"
 
   create_table "stocks", force: true do |t|
-    t.string   "ticker",                    null: false
+    t.string   "ticker",                      null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "country",    default: "tw", null: false
+    t.string   "country",      default: "tw", null: false
+    t.string   "category"
+    t.string   "sub_category"
   end
 
+  add_index "stocks", ["category"], name: "index_stocks_on_category"
   add_index "stocks", ["country"], name: "index_stocks_on_country"
+  add_index "stocks", ["sub_category"], name: "index_stocks_on_sub_category"
   add_index "stocks", ["ticker"], name: "index_stocks_on_ticker"
 
 end
