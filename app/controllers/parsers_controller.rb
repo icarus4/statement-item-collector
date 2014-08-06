@@ -17,12 +17,12 @@ end
 
 
 class TwseWebStatement
-  attr_reader :market, :statement_type, :category,
+  attr_reader :ticker, :year, :quarter,
+    :market, :statement_type, :category,
     :result, :data_source,
     :doc, :html,
     :bs_content, :is_content, :cf_content,
     :bs_table_nodeset, :is_table_nodeset, :cf_table_nodeset
-
   STATEMENT_FOLDER = Rails.root.join('doc')
 
   def initialize(ticker, year, quarter)
@@ -115,13 +115,13 @@ class TwseWebStatement
   end
 
   def open_local_html_file(name)
-    return html_file = File.open(Rails.root.join('doc', name), 'r:UTF-8')
+    return File.open(Rails.root.join('doc', name), 'r:UTF-8')
     # ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     # return ic.iconv(html_file.read)
   end
 
   def get_category(ticker)
-    if TWSE_FINANCE_STOCK_LIST.flatten.include?(ticker)
+    if TWSE_FINANCE_STOCK_LIST.flatten.flatten.include?(ticker.to_i)
       return 'finance'
     else
       return 'common'
