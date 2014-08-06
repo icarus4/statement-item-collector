@@ -42,7 +42,6 @@ gem 'nokogiri'
 
 gem 'simple_form'
 
-gem 'guard-livereload'
 
 group :development do
   gem "better_errors"
@@ -53,6 +52,9 @@ end
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
   gem 'guard-rspec', '~> 4.2.10'
+  gem 'guard-livereload'
+  gem 'spring-commands-rspec', '~> 1.0.2'
+  gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
 
 
