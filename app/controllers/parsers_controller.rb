@@ -12,6 +12,10 @@ class ParsersController < ApplicationController
     @s.parse
   end
 
+  def all
+    @items = Item.all
+  end
+
 end
 
 class TwseWebStatement
@@ -52,6 +56,8 @@ class TwseWebStatement
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
+
+    # parse and create statement items
     parse_tables(@bs_table_nodeset)
     parse_tables(@is_table_nodeset)
     parse_tables(@cf_table_nodeset)
@@ -84,7 +90,6 @@ class TwseWebStatement
     level = _get_tr_item_level(tr, name)
     has_value, value = _get_tr_item_value(tr)
 
-    ##### recursion #####
     if level == 0 # root
       item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value)
     elsif level == previous_level + 1 # current is a child of previous item

@@ -1,0 +1,18 @@
+<h3><%= link_to '新增資料', controller: 'parsers', action: 'index' %></h3>
+
+<table class="table table-striped">
+  <tbody>
+    <% @items.each do |item| %>
+      <tr>
+        <td><%= item.name %></td>
+        <td>
+          <ul>
+          <% item.statements.each do |statement| %>
+            <li><%= "#{statement.stock.ticker} #{statement.year} Q#{statement.quarter}" %></li>
+          <% end %>
+          </ul>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
