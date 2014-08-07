@@ -1,3 +1,4 @@
+<h3><%= link_to '<< 回前頁', controller: 'parsers', action: 'index' %></h3>
 <% if @s.result.nil? %>
   <div class="alert alert-danger">查無資料</div>
   <p><%= @s.inspect %></p>

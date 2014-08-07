@@ -42,4 +42,4 @@ def load_seed
   i.statements << st2
 end
 
-load_seed
+#load_seed
