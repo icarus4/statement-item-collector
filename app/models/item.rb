@@ -9,6 +9,8 @@
 #  updated_at :datetime
 #  parent_id  :integer
 #  has_value  :boolean
+#  up_id      :integer
+#  down_id    :integer
 #
 
 class Item < ActiveRecord::Base

@@ -14,9 +14,9 @@
 class Stock < ActiveRecord::Base
   has_many :statements
 
-  # ticker should be a string and unique in a market
+  # ticker should be a string and unique in a country
   validate  :ticker_should_be_a_string
-  validates :ticker, presence: true, uniqueness: {scope: :country, message: 'duplicated ticker in the current market'}
+  validates :ticker, presence: true, uniqueness: {scope: :country, message: 'duplicated ticker in the current country'}
 
   validates :country, presence: true, inclusion: {in: %w(tw us hk)}
   validates :category, presence: true, inclusion: {in: %w(common finance)}
