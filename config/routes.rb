@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   root 'parsers#ifrs'
 
   get 'parsers' => 'parsers#index'
-  get 'parsers/search/' => 'parsers#search'
+  get 'parsers/parse/' => 'parsers#parse'
   # post 'parsers/search/:search' => 'parsers#search'
 
   # Example of regular route:

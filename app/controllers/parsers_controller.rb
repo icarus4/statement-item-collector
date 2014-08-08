@@ -3,7 +3,7 @@ class ParsersController < ApplicationController
   def index
   end
 
-  def search
+  def parse
     ticker  = params[:ticker]
     year    = params[:year].to_i
     quarter = params[:quarter].to_i
