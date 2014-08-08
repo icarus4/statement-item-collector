@@ -16,7 +16,7 @@ class ParsersController < ApplicationController
     @items = Item.all.where.not(name: 'root')
 
     # FIXME: this query sucks, should be improved later
-    @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}
+    # @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}
   end
 
 end
