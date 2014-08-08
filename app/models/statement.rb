@@ -14,7 +14,7 @@
 class Statement < ActiveRecord::Base
   belongs_to :stock
 
-  has_many :item_statement_pairs
+  has_many :item_statement_pairs, dependent: :destroy
   has_many :items, through: :item_statement_pairs
 
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
