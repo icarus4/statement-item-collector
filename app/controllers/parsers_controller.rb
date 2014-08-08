@@ -13,7 +13,7 @@ class ParsersController < ApplicationController
   end
 
   def ifrs
-    @items = Item.where(s_type: 'ifrs').where.not(name: 'root')
+    @root = Item.where(name: 'root', s_type: 'ifrs').first
 
     # FIXME: this query sucks, should be improved later
     # @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}
