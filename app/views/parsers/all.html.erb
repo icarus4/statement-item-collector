@@ -6,7 +6,7 @@
       <tr>
 
         <!-- item name -->
-        <td class='item-info'><%= render_item(item, 40) %></td>
+        <td class='item-name'><%= render_item(item, 40) %></td>
 
         <!-- 共 xx 檔 -->
         <td class='stock-info'><span class='stock-count toggleable-switch'>共 <%= @stocks.size %> 檔</span>
@@ -20,9 +20,11 @@
                 <span class="ticker toggleable-switch"><%= "#{stock.ticker} (#{stock.statements.size} 次)" %></span>
 
                 <ul class='toggleable' style='display: none'>
+
                 <% stock.statements.each do |st| %>
                   <li><%= "#{st.year} Q#{st.quarter}" %></li>
                 <% end %>
+
                 </ul>
               </li>
             <% end %>
