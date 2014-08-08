@@ -21,4 +21,8 @@ class Statement < ActiveRecord::Base
   validates :year, uniqueness: {scope: [:stock_id, :quarter]}
   validates :quarter, uniqueness: {scope: [:stock_id, :year]}
   validates :stock_id, uniqueness: {scope: [:year, :quarter]}
+
+  scope :ifrs, -> { where(s_type: 'ifrs')}
+  scope :gaap, -> { where(s_type: 'gaap')}
+
 end

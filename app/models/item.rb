@@ -26,6 +26,8 @@ class Item < ActiveRecord::Base
   validates :name, presence: true
   validate  :name_should_be_unique_within_siblings
   validates :has_value, inclusion: {in: [true, false]}
+  validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
+
 
   # FIXME: We skip this validator at early stage. We have to enable this validator soon
   # validate  :up_id_and_down_id_should_presence_if_any_sibling_exists

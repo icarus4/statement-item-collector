@@ -71,15 +71,15 @@ class TwseWebStatement
     has_value, value = _get_tr_item_value(tr)
 
     if level == 0 # root
-      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value)
+      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value, s_type: @statement_type)
     elsif level == previous_level + 1 # current is a child of previous item
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value)
+      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
     elsif level <= previous_level
       pop_count = previous_level - level + 1
       item_stack.pop(pop_count)
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value)
+      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
     end
 
     # Associate Statement and Item
@@ -92,7 +92,6 @@ class TwseWebStatement
     _parse_each_table_item(tr_array, curr_index+1, level, item_stack)
 
     return
-
   end
 
   def _get_tr_item_name(tr)
