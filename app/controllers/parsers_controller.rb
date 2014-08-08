@@ -12,6 +12,18 @@ class ParsersController < ApplicationController
     @s.parse
   end
 
+  def parse_financial_stocks
+    TwseWebStatement.bank_stocks.each do |ticker|
+      (2014..2014).to_a.each do |year|
+        (1..1).to_a.each do |quarter|
+          s = TwseWebStatement.new(ticker.to_s, year, quarter)
+          s.parse
+          sleep 3
+        end
+      end
+    end
+  end
+
   def ifrs
     @root = Item.where(name: 'root', s_type: 'ifrs').first
 

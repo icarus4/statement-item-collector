@@ -5,6 +5,7 @@ class TwseWebStatement
     :doc, :html,
     :bs_content, :is_content, :cf_content,
     :bs_table_nodeset, :is_table_nodeset, :cf_table_nodeset
+
   STATEMENT_FOLDER = Rails.root.join('doc')
 
   def initialize(ticker, year, quarter)
@@ -24,14 +25,31 @@ class TwseWebStatement
     # FIXME: should refind @result to better indicate whether parsing is success or not
     @result = true
 
-    html_file = get_html_file(@ticker, @year, @quarter)
-    @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+    html_file = nil
+    ['combined', 'individual'].each do |statement_subtype|
 
-    unless get_tables
-      debug_log 'cannot get table'
-      @result = nil
-      return nil
+      html_file = get_html_file(@ticker, @year, @quarter, 'combined')
+
+      begin
+        @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+        get_tables
+      rescue
+        next if statement_subtype == 'combined'
+        return nil if statement_subtype == 'individual'
+      end
     end
+
+    # unless get_tables
+    #   debug_log 'cannot get table'
+    #   @result = nil
+    #   return nil
+    # end
+
+
+    # save to local
+    file_path = html_file_storing_path(@ticker, @year, @quarter)
+    File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+
 
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
@@ -41,6 +59,22 @@ class TwseWebStatement
     parse_tables(@bs_table_nodeset)
     parse_tables(@is_table_nodeset)
     parse_tables(@cf_table_nodeset)
+  end
+
+  def self.financial_stocks
+    TWSE_FINANCE_STOCK_LIST.map{|k,v| v}.flatten
+  end
+
+  def self.bank_stocks
+    TWSE_FINANCE_STOCK_LIST[:bank]
+  end
+
+  def self.assurance_stocks
+    TWSE_FINANCE_STOCK_LIST[:assurance]
+  end
+
+  def self.broker_stocks
+    TWSE_FINANCE_STOCK_LIST[:broker]
   end
 
 
@@ -145,7 +179,7 @@ class TwseWebStatement
     # check whether data is existed or not
     if @doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
       debug_log "查無資料，full html content:\n#{@doc}"
-      return nil
+      raise '查無資料'
     end
 
     @html = @doc.at_css('html html')
@@ -167,7 +201,7 @@ class TwseWebStatement
     return true
   end
 
-  def get_html_file(ticker, year, quarter)
+  def get_html_file(ticker, year, quarter, statement_subtype)
 
     file_path = html_file_storing_path(ticker, year, quarter)
 
@@ -178,15 +212,16 @@ class TwseWebStatement
       @data_source = file_path
     else
       debug_log "getting #{ticker} (#{year}Q#{quarter}) html from TWSE"
-      html_file = get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter)
+      html_file = get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
       @data_source = 'TWSE'
-      File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}  # save to local
     end
 
     return html_file
   end
 
-  def get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter)
+  def get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
+
+    report_id = statement_subtype == 'combined' ? 'C' : 'A'
 
     url = 'http://mops.twse.com.tw/server-java/t164sb01'
 
@@ -196,7 +231,7 @@ class TwseWebStatement
       CO_ID:      ticker,
       SYEAR:      year,
       SSEASON:    quarter,
-      REPORT_ID:  'C'
+      REPORT_ID:  report_id
     }
 
     # get html
@@ -283,6 +318,9 @@ class TwseWebStatement
       6024  # 6024 群益期
     ]
   }
+
+  # @@TWSE_FINANCE_STOCK_LIST = TWSE_FINANCE_STOCK_LIST
+
 
 end
 
