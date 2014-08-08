@@ -13,7 +13,7 @@ class ParsersController < ApplicationController
   end
 
   def all
-    @items = Item.all
+    @items = Item.all.where.not(name: 'root')
   end
 
 end

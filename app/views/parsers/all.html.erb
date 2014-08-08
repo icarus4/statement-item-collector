@@ -4,7 +4,7 @@
   <tbody>
     <% @items.each do |item| %>
       <tr>
-        <td><%= item.name %></td>
+        <td><%= render_item(item, 40) %></td>
         <td>
           <ul>
           <% item.statements.each do |statement| %>
