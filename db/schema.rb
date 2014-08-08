@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140808065341) do
+ActiveRecord::Schema.define(version: 20140808071725) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -33,24 +33,24 @@ ActiveRecord::Schema.define(version: 20140808065341) do
   add_index "item_statement_pairs", ["statement_id"], name: "index_item_statement_pairs_on_statement_id"
 
   create_table "items", force: true do |t|
-    t.string   "name",       null: false
+    t.string   "name",        null: false
     t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "parent_id"
     t.boolean  "has_value"
-    t.integer  "up_id"
-    t.integer  "down_id"
+    t.integer  "previous_id"
+    t.integer  "next_id"
     t.string   "s_type"
   end
 
-  add_index "items", ["down_id"], name: "index_items_on_down_id"
   add_index "items", ["has_value"], name: "index_items_on_has_value"
   add_index "items", ["level"], name: "index_items_on_level"
   add_index "items", ["name"], name: "index_items_on_name"
+  add_index "items", ["next_id"], name: "index_items_on_next_id"
   add_index "items", ["parent_id"], name: "index_items_on_parent_id"
+  add_index "items", ["previous_id"], name: "index_items_on_previous_id"
   add_index "items", ["s_type"], name: "index_items_on_s_type"
-  add_index "items", ["up_id"], name: "index_items_on_up_id"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false
