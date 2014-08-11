@@ -2,15 +2,16 @@
 #
 # Table name: items
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)      not null
-#  level      :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  parent_id  :integer
-#  has_value  :boolean
-#  up_id      :integer
-#  down_id    :integer
+#  id          :integer          not null, primary key
+#  name        :string(255)      not null
+#  level       :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#  parent_id   :integer
+#  has_value   :boolean
+#  previous_id :integer
+#  next_id     :integer
+#  s_type      :string(255)
 #
 
 class Item < ActiveRecord::Base
@@ -19,16 +20,18 @@ class Item < ActiveRecord::Base
   # belongs_to :parent_item, class_name: 'Item'
 
 
-  has_many :item_statement_pairs
+  has_many :item_statement_pairs, dependent: :destroy
   has_many :statements, through: :item_statement_pairs
 
 
   validates :name, presence: true
   validate  :name_should_be_unique_within_siblings
   validates :has_value, inclusion: {in: [true, false]}
+  validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
+
 
   # FIXME: We skip this validator at early stage. We have to enable this validator soon
-  # validate  :up_id_and_down_id_should_presence_if_any_sibling_exists
+  # validate  :previous_id_and_next_id_should_presence_if_any_sibling_exists
 
 
   protected
@@ -41,11 +44,11 @@ class Item < ActiveRecord::Base
     end
   end
 
-  def up_id_and_down_id_should_presence_if_any_sibling_exists
+  def previous_id_and_next_id_should_presence_if_any_sibling_exists
     if siblings.present?
-      if up_id.nil? and down_id.nil?
-        errors.add(:up_id, 'up_id should be set if item has sibling(s)')
-        errors.add(:down_id, 'down_id should be set if item has sibling(s)')
+      if previous_id.nil? and next_id.nil?
+        errors.add(:previous_id, 'previous_id should be set if item has sibling(s)')
+        errors.add(:next_id, 'next_id should be set if item has sibling(s)')
       end
     end
   end

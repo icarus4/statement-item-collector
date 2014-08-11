@@ -14,11 +14,15 @@
 class Statement < ActiveRecord::Base
   belongs_to :stock
 
-  has_many :item_statement_pairs
+  has_many :item_statement_pairs, dependent: :destroy
   has_many :items, through: :item_statement_pairs
 
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
   validates :year, uniqueness: {scope: [:stock_id, :quarter]}
   validates :quarter, uniqueness: {scope: [:stock_id, :year]}
   validates :stock_id, uniqueness: {scope: [:year, :quarter]}
+
+  scope :ifrs, -> { where(s_type: 'ifrs')}
+  scope :gaap, -> { where(s_type: 'gaap')}
+
 end

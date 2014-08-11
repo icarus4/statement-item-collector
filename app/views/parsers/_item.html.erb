@@ -1,0 +1,33 @@
+<tr>
+
+  <!-- item name -->
+  <td class='item-name'><%= render_item(item, 28) %></td>
+
+  <!-- 共 xx 檔 -->
+  <% stocks = item.statements.map(&:stock).uniq.sort_by{|stock|stock.ticker} %>
+  <td class='stock-info'><span class='stock-count toggleable-switch'>共 <%= stocks.size %> 檔</span>
+
+      <ul class='toggleable' style='display: none'>
+
+      <% stocks.each do |stock| %>
+        <li>
+
+          <!-- 2330 (x 次) -->
+          <span class="ticker toggleable-switch"><%= "#{stock.ticker} (#{stock.statements.size} 次)" %></span>
+
+          <ul class='toggleable' style='display: none'>
+
+          <% stock.statements.each do |st| %>
+            <li><%= "#{st.year} Q#{st.quarter}" %></li>
+          <% end %>
+
+          </ul>
+        </li>
+      <% end %>
+
+      </ul>
+
+  </td>
+</tr>
+
+<%= render partial: 'parsers/item', collection: item.children, as: :item %>

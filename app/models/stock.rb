@@ -12,7 +12,7 @@
 #
 
 class Stock < ActiveRecord::Base
-  has_many :statements
+  has_many :statements, dependent: :destroy
 
   # ticker should be a string and unique in a country
   validate  :ticker_should_be_a_string
