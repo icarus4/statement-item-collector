@@ -244,7 +244,20 @@ class TwseWebStatement
     }
 
     # get html
-    html_file = RestClient.post(url, form_data)
+    html_file = RestClient.post(
+      url,
+      form_data,
+      user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+      # {
+      #   Content-Length: '57',
+      #   Content-Type: 'application/x-www-form-urlencoded',
+      #   Cookie: '__utma=193825960.922472084.1403834714.1407900313.1407906729.10; __utmc=193825960; __utmz=193825960.1407906729.10.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
+      #   Host: 'mops.twse.com.tw',
+      #   Origin: 'http://mops.twse.com.tw',
+      #   User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+      #   Referer: 'http://mops.twse.com.tw/server-java/t164sb01',
+      # }
+    )
 
     # 降低被 server 擋 request 的機率
     sleep 5
