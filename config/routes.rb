@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   get 'parsers' => 'parsers#ifrs'
   get 'parsers/parse/' => 'parsers#parse'
+  get 'parsers/ifrs' => 'parsers#ifrs'
   get 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
   # post 'parsers/search/:search' => 'parsers#search'
 

@@ -237,6 +237,9 @@ class TwseWebStatement
     # get html
     html_file = RestClient.post(url, form_data)
 
+    # 降低被 server 擋 request 的機率
+    sleep 5
+
     # big5 => utf8
     ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     return ic.iconv(html_file)
