@@ -31,6 +31,8 @@ class TwseWebStatement
       html_file = get_html_file(@ticker, @year, @quarter, 'combined')
 
       begin
+        raise if html_file.nil?
+        raise if html_file.size < 20000
         @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
         get_tables
       rescue
@@ -48,8 +50,9 @@ class TwseWebStatement
 
     # save to local
     file_path = html_file_storing_path(@ticker, @year, @quarter)
-    File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
-
+    unless File.exist?(file_path)
+      File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    end
 
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
