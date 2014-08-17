@@ -19,9 +19,11 @@ class Item < ActiveRecord::Base
   # has_many :child_items, class_name: 'Item', foreign_key: 'parent_item_id'
   # belongs_to :parent_item, class_name: 'Item'
 
-
   has_many :item_statement_pairs, dependent: :destroy
   has_many :statements, through: :item_statement_pairs
+
+  has_many :item_stock_pairs, dependent: :destroy
+  has_many :stocks, through: :item_stock_pairs
 
 
   validates :name, presence: true

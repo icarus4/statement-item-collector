@@ -131,6 +131,12 @@ class TwseWebStatement
     rescue
     end
 
+    # Associate Stock and Item
+    begin
+      item.stocks << @stock
+    rescue
+    end
+
     item_stack.push(item)
     _parse_each_table_item(tr_array, curr_index+1, level, item_stack)
 

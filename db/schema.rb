@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140808071725) do
+ActiveRecord::Schema.define(version: 20140817075656) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -31,6 +31,16 @@ ActiveRecord::Schema.define(version: 20140808071725) do
   add_index "item_statement_pairs", ["item_id"], name: "index_item_statement_pairs_on_item_id"
   add_index "item_statement_pairs", ["statement_id", "item_id"], name: "index_item_statement_pairs_on_statement_id_and_item_id", unique: true
   add_index "item_statement_pairs", ["statement_id"], name: "index_item_statement_pairs_on_statement_id"
+
+  create_table "item_stock_pairs", force: true do |t|
+    t.integer "item_id",  null: false
+    t.integer "stock_id", null: false
+  end
+
+  add_index "item_stock_pairs", ["item_id", "stock_id"], name: "index_item_stock_pairs_on_item_id_and_stock_id", unique: true
+  add_index "item_stock_pairs", ["item_id"], name: "index_item_stock_pairs_on_item_id"
+  add_index "item_stock_pairs", ["stock_id", "item_id"], name: "index_item_stock_pairs_on_stock_id_and_item_id", unique: true
+  add_index "item_stock_pairs", ["stock_id"], name: "index_item_stock_pairs_on_stock_id"
 
   create_table "items", force: true do |t|
     t.string   "name",        null: false

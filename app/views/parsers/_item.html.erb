@@ -4,12 +4,12 @@
   <%= render_item(item, 28) %>
 
   <!-- 共 xx 檔 -->
-  <% stocks = item.statements.map(&:stock).uniq.sort_by{|stock|stock.ticker} %>
-  <td class='stock-info'><span class='stock-count toggleable-switch'>共 <%= stocks.size %> 檔</span>
+  <%# stocks = item.statements.map(&:stock).uniq.sort_by{|stock|stock.ticker} %>
+  <td class='stock-info'><span class='stock-count toggleable-switch'>共 <%= item.stocks.size %> 檔</span>
 
       <ul class='toggleable' style='display: none'>
 
-      <% stocks.each do |stock| %>
+      <% item.stocks.each do |stock| %>
         <li>
 
           <!-- 2330 (x 次) -->
