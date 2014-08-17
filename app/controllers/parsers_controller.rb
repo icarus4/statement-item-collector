@@ -38,7 +38,14 @@ class ParsersController < ApplicationController
   end
 
   def ifrs
-    @root = Item.where(name: 'root', s_type: 'ifrs').first
+    case params[:table_name]
+    when 'bs' then table_name = '資產負債表'
+    when 'is' then table_name = '綜合損益表'
+    when 'cf' then table_name = '現金流量表'
+    else table_name = 'root'
+    end
+
+    @root = Item.where(name: table_name, s_type: 'ifrs').first
 
     # FIXME: this query sucks, should be improved later
     # @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}

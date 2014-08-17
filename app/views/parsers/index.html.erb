@@ -12,5 +12,8 @@
 
 <!-- 顯示資料 -->
 <div class='result-links'>
-  <h4><%= link_to '顯示 IFRS 分析資料', controller: 'parsers', action: 'ifrs' %></h4>
+  <h4><%= link_to'顯示 IFRS 資產負債表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'bs'}, target: '_blank' %></h4>
+  <h4><%= link_to '顯示 IFRS 綜合損益表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'is'}, target: '_blank' %></h4>
+  <h4><%= link_to '顯示 IFRS 現金流量表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'cf'}, target: '_blank' %></h4>
+  <h4><%= link_to '顯示 IFRS 全部分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></h4>
 </div>
