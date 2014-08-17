@@ -171,7 +171,7 @@ class TwseWebStatement
 
     # Return false if not an integer
     value = text.gsub(/,/, '') # remove ',' for number with format: 123,456,789
-    return false, nil if value != value.to_i.to_s
+    return false, nil unless value.is_number?
 
     return true, value
   end
@@ -333,6 +333,11 @@ class TwseWebStatement
 
   # @@TWSE_FINANCE_STOCK_LIST = TWSE_FINANCE_STOCK_LIST
 
-
 end
 
+
+class String
+  def is_number?
+    true if Float(self) rescue false
+  end
+end
