@@ -1,7 +1,7 @@
 <tr>
 
-  <!-- item name -->
-  <td class='item-name'><%= render_item(item, 28) %></td>
+  <!-- render td: item name -->
+  <%= render_item(item, 28) %>
 
   <!-- 共 xx 檔 -->
   <% stocks = item.statements.map(&:stock).uniq.sort_by{|stock|stock.ticker} %>
