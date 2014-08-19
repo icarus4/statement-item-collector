@@ -59,9 +59,14 @@ class TwseWebStatement
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
 
     # parse and create statement items
-    parse_tables(@bs_table_nodeset)
-    parse_tables(@is_table_nodeset)
-    parse_tables(@cf_table_nodeset)
+    begin
+      parse_tables(@bs_table_nodeset)
+      parse_tables(@is_table_nodeset)
+      parse_tables(@cf_table_nodeset)
+    rescue Exception => e
+       debug_log e.message
+       debug_log e.backtrace.inspect
+    end
   end
 
   def self.financial_stocks
@@ -88,10 +93,12 @@ class TwseWebStatement
     table_nodeset.css('tr').each do |tr|
       tr_array << tr
     end
-    _parse_each_table_item(tr_array, 0, 0, nil)
+    _parse_each_table_item(tr_array, 0, 0, [], nil)
   end
 
-  def _parse_each_table_item(tr_array, curr_index, previous_level, item_stack)
+  # previous_item_array is an array contains previous items of each level
+  # ex: previous_item_array[1] is the previous item of the current level 1 item.
+  def _parse_each_table_item(tr_array, curr_index, previous_level, previous_item_array, item_stack)
 
     # init item_stack
     item_stack = Stack.new if item_stack.nil?
@@ -107,22 +114,106 @@ class TwseWebStatement
     level = _get_tr_item_level(tr, name)
     has_value, value = _get_tr_item_value(tr)
 
+    # get previous_item of current level
+    previous_item = previous_item_array[level]
+
     if level == 0 # root
 
-      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value, s_type: @statement_type)
+      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value, s_type: @statement_type, previous_id: nil, next_id: nil)
 
     elsif level == previous_level + 1 # current is a child of previous item
 
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
+
+      # NO identical item exists
+      unless item = parent_item.children.where(name: name, level: level, has_value: has_value, s_type: @statement_type).first
+        previous_id = nil
+        next_id = nil
+
+        # if brother exists (brother is an item which is identical to the current item, EXCEPT has_value is opposite)
+        if brother = parent_item.children.where(name: name, level: level, has_value: !has_value, s_type: @statement_type).first
+          if has_value # if the current item has value, it should be positioned above its brother
+            # position above its brother
+            previous_id = brother.previous_id
+            next_id = brother.id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+            brother.previous_id = item.id
+            brother.save!
+          else # if current item doesn't has value, it should be positioned under its brother
+            # position under its brother
+            previous_id = brother.id
+            next_id = brother.next_id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+            brother.next_id = item.id
+            brother.save!
+          end
+
+        # if brother doesn't exist but there is any sibling exists, try to get the first sibling
+        elsif first_sibling = parent_item.children.where(previous_id: nil).first
+          next_id = first_sibling.id
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+          first_sibling.previous_id = item.id
+          first_sibling.save!
+
+        # there is NO any sibling exists
+        else
+          raise 'should not has any sibling' if parent_item.children.any? # should not has any sibling here
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+        end
+      end
 
     elsif level <= previous_level
 
       pop_count = previous_level - level + 1
       item_stack.pop(pop_count)
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
 
+      # if NO identical item exists
+      unless item = parent_item.children.where(name: name, level: level, has_value: has_value, s_type: @statement_type).first
+        # if brother exists
+        if brother = parent_item.children.where(name: name, level: level, has_value: !has_value, s_type: @statement_type).first
+          if has_value # if the current item has value, it should be positioned above its brother
+            # position above its brother
+            previous_id = brother.previous_id
+            next_id = brother.id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+            brother.previous_id = item.id
+            brother.save!
+          else # if current item doesn't has value, it should be positioned under its brother
+            # position under its brother
+            previous_id = brother.id
+            next_id = brother.next_id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+            brother.next_id = item.id
+            brother.save!
+          end
+
+        # brother doesn't exist, so position under its previous item or under brother of its previous item
+        else
+          raise 'previous item should not be nil' if previous_item.nil?
+
+          # Set previous item to the brother of previous item if this previous item has value and has a brother
+          # otherwise we will get things like as follows:
+          #
+          # 現金及約當現金 共 15 檔               <== 這兩檔互為 brother，應該擺在一起
+          # 存放央行及拆借金融同業 共 15 檔
+          # 現金及約當現金 共 11 檔               <== 這兩檔互為 brother，應該擺在一起
+          #   庫存現金  共 5 檔
+          #   零用及週轉金
+          if previous_item.has_value? && previous_item.brother.present?
+            previous_item = previous_item.brother
+          end
+
+          previous_id = previous_item.id
+          next_id = previous_item.next_id
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+          previous_item.next_id = item.id
+          previous_item.save!
+        end
+      end
+
+    else
+      raise 'level error'
     end
 
     # Associate Statement and Item
@@ -137,8 +228,9 @@ class TwseWebStatement
     rescue
     end
 
+    previous_item_array[level] = item
     item_stack.push(item)
-    _parse_each_table_item(tr_array, curr_index+1, level, item_stack)
+    _parse_each_table_item(tr_array, curr_index+1, level, previous_item_array, item_stack)
 
     return
   end

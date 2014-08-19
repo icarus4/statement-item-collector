@@ -30,4 +30,12 @@
   </td>
 </tr>
 
-<%= render partial: 'parsers/item', collection: item.children, as: :item %>
+<!-- render first child -->
+<% unless item.leaf? %>
+  <%= render partial: 'parsers/item_with_order', locals: {item: item.children.first_item} %>
+<% end %>
+
+<!-- render next sibling -->
+<% unless item.next_item.nil? %>
+  <%= render partial: 'parsers/item_with_order', locals: {item: item.next_item} %>
+<% end %>

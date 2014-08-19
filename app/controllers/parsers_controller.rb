@@ -16,7 +16,7 @@ class ParsersController < ApplicationController
     start_year = 2013
     start_quarter = 1
     end_year = 2014
-    end_quarter = 2
+    end_quarter = 1
 
     start_year = params[:start_year].to_i if params[:start_year]
     start_quarter = params[:start_quarter].to_i if params[:start_quarter]
@@ -45,7 +45,7 @@ class ParsersController < ApplicationController
     else table_name = 'root'
     end
 
-    @root = Item.where(name: table_name, s_type: 'ifrs').first
+    @item = Item.where(name: table_name, s_type: 'ifrs').first
 
     # FIXME: this query sucks, should be improved later
     # @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}

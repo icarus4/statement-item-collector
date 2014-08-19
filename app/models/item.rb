@@ -31,10 +31,20 @@ class Item < ActiveRecord::Base
   validates :has_value, inclusion: {in: [true, false]}
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
 
+  scope :first_item, -> {where(previous_id: nil).first}
+  scope :last_item, -> {where(next_id: nil).first}
 
   # FIXME: We skip this validator at early stage. We have to enable this validator soon
   # validate  :previous_id_and_next_id_should_presence_if_any_sibling_exists
 
+  # a brother of an item is the item who has all field are identical with an item, except has_value is opposite
+  def brother
+    Item.where(name: self.name, level: self.level, parent_id: self.parent_id, s_type: self.s_type, has_value: !self.has_value).first
+  end
+
+  def next_item
+    Item.find_by_id(self.next_id) # return nil if no record found or input is nil
+  end
 
   protected
 

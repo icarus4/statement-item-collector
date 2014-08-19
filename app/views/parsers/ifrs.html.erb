@@ -2,6 +2,6 @@
 
 <table id='item-view' class="table table-striped table-condensed">
   <tbody>
-    <%= render partial: 'parsers/item', collection: @root.children, as: :item %>
+    <%= render partial: 'parsers/item_with_order', locals: {item: @item.children.first_item} %>
   </tbody>
 </table>
