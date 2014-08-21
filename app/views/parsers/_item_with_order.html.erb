@@ -36,6 +36,6 @@
 <% end %>
 
 <!-- render next sibling -->
-<% unless item.next_item.nil? %>
+<% if item.next_item.present? %>
   <%= render partial: 'parsers/item_with_order', locals: {item: item.next_item} %>
 <% end %>
