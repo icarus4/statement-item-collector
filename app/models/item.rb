@@ -46,6 +46,22 @@ class Item < ActiveRecord::Base
     Item.find_by_id(self.next_id) # return nil if no record found or input is nil
   end
 
+  def is_category?(category)
+    self.stocks.where(category: category).present?
+  end
+
+  def is_not_category?(category)
+    !self.is_category?(category)
+  end
+
+  def is_sub_category?(sub_category)
+    self.stocks.where(sub_category: sub_category).present?
+  end
+
+  def is_not_sub_category?(sub_category)
+    !self.is_sub_category?(sub_category)
+  end
+
   protected
 
   def name_should_be_unique_within_siblings
