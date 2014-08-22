@@ -6,11 +6,12 @@
   <%= render_item(item, 28) %>
 
   <!-- 共 xx 檔 -->
-  <%# stocks = item.statements.map(&:stock).uniq.sort_by{|stock|stock.ticker} %>
-  <td class='stock-info'><span class='stock-count toggleable-switch'>共 <%= item.stocks.size %> 檔</span>
+  <td class='stock-info'>
+    <%= render_stock_count(item, @category, @sub_category) %>
 
       <ul class='toggleable' style='display: none'>
 
+      <%# if @sub_category.present? && item.is_sub_category?(@sub_category) %>
       <% item.stocks.each do |stock| %>
         <li>
 
