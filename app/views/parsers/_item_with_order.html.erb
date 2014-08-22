@@ -9,26 +9,11 @@
   <td class='stock-info'>
     <%= render_stock_count(item, @category, @sub_category) %>
 
-      <ul class='toggleable' style='display: none'>
+    <ul class='toggleable' style='display: none'>
 
-      <%# if @sub_category.present? && item.is_sub_category?(@sub_category) %>
-      <% item.stocks.each do |stock| %>
-        <li>
+      <%= render_corresponding_statements(item, @category, @sub_category) %>
 
-          <!-- 2330 (x 次) -->
-          <span class="ticker toggleable-switch"><%= "#{stock.ticker} (#{stock.statements.size} 次)" %></span>
-
-          <ul class='toggleable' style='display: none'>
-
-          <% stock.statements.order(:year, :quarter).each do |st| %>
-            <li><%= "#{st.year} Q#{st.quarter}" %></li>
-          <% end %>
-
-          </ul>
-        </li>
-      <% end %>
-
-      </ul>
+    </ul>
 
   </td>
 </tr>

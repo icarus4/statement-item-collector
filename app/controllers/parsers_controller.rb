@@ -49,9 +49,6 @@ class ParsersController < ApplicationController
     @sub_category = params[:sub_category]
 
     @item = Item.where(name: table_name, s_type: 'ifrs').first
-
-    # FIXME: this query sucks, should be improved later
-    # @stocks = @items.map{|i|i.statements.map(&:stock).uniq}.uniq.flatten.uniq.sort_by{|stock|stock.ticker}
   end
 
 end
