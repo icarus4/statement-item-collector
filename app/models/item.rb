@@ -46,6 +46,10 @@ class Item < ActiveRecord::Base
     Item.find_by_id(self.next_id) # return nil if no record found or input is nil
   end
 
+  def previous_item
+    Item.find_by_id(self.previous_id) # return nil if no record found or input is nil
+  end
+
   def is_category?(category)
     self.stocks.where(category: category).present?
   end

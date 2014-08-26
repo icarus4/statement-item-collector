@@ -137,6 +137,20 @@ class TwseWebStatement
             previous_id = brother.previous_id
             next_id = brother.id
             item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            previous_item_of_brother = brother.previous_item
+            if previous_item_of_brother.present?
+              # before insert current item:
+              #   previous item of brother
+              #   brother
+              # after:
+              #   previous item of brother
+              #   current item              <== insert here
+              #   brother
+              previous_item_of_brother.next_id = item.id
+              previous_item_of_brother.save!
+            end
+
             brother.previous_id = item.id
             brother.save!
           else # if current item doesn't has value, it should be positioned under its brother
@@ -144,6 +158,20 @@ class TwseWebStatement
             previous_id = brother.id
             next_id = brother.next_id
             item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            next_item_of_brother = brother.next_item
+            if next_item_of_brother.present?
+              # before insert current item:
+              #   brother
+              #   next item of brother
+              # after:
+              #   brother
+              #   current item          <== insert here
+              #   next item of brother
+              next_item_of_brother.previous_id = item.id
+              next_item_of_brother.save!
+            end
+
             brother.next_id = item.id
             brother.save!
           end
@@ -159,8 +187,8 @@ class TwseWebStatement
         else
           raise 'should not has any sibling' if parent_item.children.any? # should not has any sibling here
           item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
-        end
-      end
+        end # if brother = ...
+      end # unless item = ...
 
     elsif level <= previous_level
 
@@ -177,6 +205,20 @@ class TwseWebStatement
             previous_id = brother.previous_id
             next_id = brother.id
             item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            previous_item_of_brother = brother.previous_item
+            if previous_item_of_brother.present?
+              # before insert current item:
+              #   previous item of brother
+              #   brother
+              # after:
+              #   previous item of brother
+              #   current item              <== insert here
+              #   brother
+              previous_item_of_brother.next_id = item.id
+              previous_item_of_brother.save!
+            end
+
             brother.previous_id = item.id
             brother.save!
           else # if current item doesn't has value, it should be positioned under its brother
@@ -184,9 +226,23 @@ class TwseWebStatement
             previous_id = brother.id
             next_id = brother.next_id
             item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            next_item_of_brother = brother.next_item
+            if next_item_of_brother.present?
+              # before insert current item:
+              #   brother
+              #   next item of brother
+              # after:
+              #   brother
+              #   current item          <== insert here
+              #   next item of brother
+              next_item_of_brother.previous_id = item.id
+              next_item_of_brother.save!
+            end
+
             brother.next_id = item.id
             brother.save!
-          end
+          end # else
 
         # brother doesn't exist, so position under its previous item or under brother of its previous item
         else
@@ -209,8 +265,8 @@ class TwseWebStatement
           item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
           previous_item.next_id = item.id
           previous_item.save!
-        end
-      end
+        end # if brother = ....
+      end # unless item = ...
 
     else
       raise 'level error'
