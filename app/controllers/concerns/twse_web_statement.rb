@@ -60,12 +60,13 @@ class TwseWebStatement
     return nil if open_statements.nil?
 
     # get BS/IS/CF html tables
-    return nil if get_tables.nil?
+    @doc = Nokogiri::HTML(@html_file, nil, 'UTF-8')
+    return nil if get_tables(@doc, @statement_type).nil?
 
     # save to local
-    file_path = html_file_storing_path(@ticker, @year, @quarter)
+    file_path = html_file_storing_path(@ticker, @year, @quarter, @statement_type, @statement_subtype)
     unless File.exist?(file_path)
-      File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+      File.open(file_path, 'w:UTF-8') {|f| f.write(@html_file)}
     end
 
 
@@ -77,6 +78,8 @@ class TwseWebStatement
     parse_tables(@bs_table_nodeset)
     parse_tables(@is_table_nodeset)
     parse_tables(@cf_table_nodeset)
+
+    return true
   end
 
   def self.financial_stocks
@@ -110,8 +113,26 @@ class TwseWebStatement
       if retry_count > 3
         return nil
       end
-      html_file = get_html_file(@ticker, @year, @quarter, @statement_subtype)
-      break if html_file.present? && html_file.size > 20000
+
+      html_file = get_html_file(@ticker, @year, @quarter, @statement_type, @statement_subtype)
+
+      if html_file.present?
+        begin
+          doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+        rescue
+          debug_log 'error when open file by Nokogiri'
+          return nil
+        end
+
+        # 查無資料或其他無資料的狀況
+        if doc.css('table').size < 3
+          debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
+          return nil
+        else
+          break
+        end
+      end
+
       sleep 3 # 降低被 server 擋 request 的機率
       retry_count += 1
     end
@@ -392,24 +413,36 @@ class TwseWebStatement
     return whitespace_count
   end
 
-  def get_tables
+  def get_tables(doc, statement_type)
 
-    # check whether data is existed or not
-    if @doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
-      # debug_log "查無資料，full html content:\n#{@doc}"
-      debug_log '查無資料'
-      return nil
+    if statement_type == 'ifrs'
+      # check whether data is existed or not
+      if doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
+        # debug_log "查無資料，full html content:\n#{doc}"
+        debug_log '查無資料'
+        return nil
+      end
+
+      @html = doc.at_css('html html')
+
+      # get 資產負債表 / 損益表 / 現金流量表
+      @bs_table_nodeset = doc.css('html body center table')[1]
+      @is_table_nodeset = doc.css('html body center table')[2]
+      @cf_table_nodeset = doc.css('html body center table')[3]
+      raise 'Failed to get balance sheet tables' unless @bs_table_nodeset.is_a?(Nokogiri::XML::Element)
+      raise 'Failed to get income statement tables' unless @is_table_nodeset.is_a?(Nokogiri::XML::Element)
+      raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
+
+    elsif statement_type == 'gaap'
+      # check whether data is existed or not
+      if doc.css('table').size < 3
+        # debug_log "查無資料，full html content:\n#{doc}"
+        debug_log '查無資料'
+        return nil
+      end
+    else
+      raise 'wrong statement_type'
     end
-
-    @html = @doc.at_css('html html')
-
-    # get 資產負債表 / 損益表 / 現金流量表
-    @bs_table_nodeset = @doc.css('html body center table')[1]
-    @is_table_nodeset = @doc.css('html body center table')[2]
-    @cf_table_nodeset = @doc.css('html body center table')[3]
-    raise 'Failed to get balance sheet tables' unless @bs_table_nodeset.is_a?(Nokogiri::XML::Element)
-    raise 'Failed to get income statement tables' unless @is_table_nodeset.is_a?(Nokogiri::XML::Element)
-    raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
 
     # TODO: check content is valid or not
 
@@ -420,9 +453,9 @@ class TwseWebStatement
     return true
   end
 
-  def get_html_file(ticker, year, quarter, statement_subtype)
+  def get_html_file(ticker, year, quarter, statement_type, statement_subtype)
 
-    file_path = html_file_storing_path(ticker, year, quarter)
+    file_path = html_file_storing_path(ticker, year, quarter, statement_type, statement_subtype)
 
     # get html file if already existed, otherwise get from TWSE
     if File.exist?(file_path)
@@ -431,7 +464,7 @@ class TwseWebStatement
       @data_source = file_path
     else
       debug_log "getting #{ticker} (#{year}Q#{quarter}) html from TWSE"
-      html_file = get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
+      html_file = get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_type, statement_subtype)
       @data_source = 'TWSE'
     end
 
@@ -444,44 +477,80 @@ class TwseWebStatement
     xbrl_file = open_local_file('xbrl/tifrs-fr1-m1-ci-cr-2330-2014Q1.xml')
   end
 
-  def get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
+  def get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_type, statement_subtype)
 
-    report_id = statement_subtype == 'combined' ? 'C' : 'A'
+    if statement_type == 'ifrs'
+      report_id = statement_subtype == 'combined' ? 'C' : 'A'
+      url = 'http://mops.twse.com.tw/server-java/t164sb01'
 
-    url = 'http://mops.twse.com.tw/server-java/t164sb01'
+      form_data = {
+        step:       '1',
+        DEBUG:      '',
+        CO_ID:      ticker,
+        SYEAR:      year,
+        SSEASON:    quarter,
+        REPORT_ID:  report_id
+      }
+      # get html
+      html_file = RestClient.post(
+        url,
+        form_data
+        # user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+        # {
+        #   Content-Length: '57',
+        #   Content-Type: 'application/x-www-form-urlencoded',
+        #   Cookie: '__utma=193825960.922472084.1403834714.1407900313.1407906729.10; __utmc=193825960; __utmz=193825960.1407906729.10.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
+        #   Host: 'mops.twse.com.tw',
+        #   Origin: 'http://mops.twse.com.tw',
+        #   User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+        #   Referer: 'http://mops.twse.com.tw/server-java/t164sb01',
+        # }
+      )
+    elsif statement_type == 'gaap'
 
-    form_data = {
-      step:       '1',
-      DEBUG:      '',
-      CO_ID:      ticker,
-      SYEAR:      year,
-      SSEASON:    quarter,
-      REPORT_ID:  report_id
-    }
+      debug_log "downloading #{ticker} #{year} Q#{quarter} #{statement_subtype} gaap statement..."
 
-    # get html
-    html_file = RestClient.post(
-      url,
-      form_data,
-      user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-      # {
-      #   Content-Length: '57',
-      #   Content-Type: 'application/x-www-form-urlencoded',
-      #   Cookie: '__utma=193825960.922472084.1403834714.1407900313.1407906729.10; __utmc=193825960; __utmz=193825960.1407906729.10.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
-      #   Host: 'mops.twse.com.tw',
-      #   Origin: 'http://mops.twse.com.tw',
-      #   User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-      #   Referer: 'http://mops.twse.com.tw/server-java/t164sb01',
-      # }
-    )
+      report_id = statement_subtype == 'combined' ? 'B' : 'A'
+      url = 'http://mops.twse.com.tw'
+      urn = '/server-java/t147sb02'
+      form_data = {
+        step:    '0',
+        comp_id: ticker,
+        R_TYPE1: report_id,
+        YEAR1:   year.to_s,
+        SEASON1: quarter.to_s
+      }
+
+      conn = Faraday.new(url: url) do |c|
+        c.use Faraday::Request::UrlEncoded
+        c.use Faraday::Response::Logger
+        c.use Faraday::Adapter::NetHttp
+        # c.request :multipart
+      end
+
+      resp = conn.post(urn, form_data)
+
+      html_file = resp.body
+      ap html_file
+    else
+      raise 'error statement_type'
+    end
+
 
     # big5 => utf8
     ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     return ic.iconv(html_file)
   end
 
-  def html_file_storing_path(ticker, year, quarter)
-    "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}.html"
+  def html_file_storing_path(ticker, year, quarter, statement_type, statement_subtype)
+    if statement_type == 'ifrs'
+      return "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}.html"
+    end
+
+    if statement_type == 'gaap'
+      sub_type_name = statement_subtype == 'combined' ? 'c' : 'i'
+      return "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}-#{sub_type_name}.html"
+    end
   end
 
   def xbrl_file_storing_path(ticker, year, quarter)

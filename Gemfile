@@ -66,6 +66,8 @@ gem 'hirb-unicode'
 
 gem 'awesome_print'
 
-gem 'rest-client'
+gem 'rest-client', '~> 1.7.2'
 
 gem 'iconv'
+
+gem 'faraday'

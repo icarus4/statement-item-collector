@@ -8,6 +8,6 @@
 #
 
 class ItemStockPair < ActiveRecord::Base
-  belongs_to :item
-  belongs_to :stock
+  belongs_to :item, autosave: false
+  belongs_to :stock, autosave: false
 end

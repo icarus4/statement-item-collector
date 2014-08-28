@@ -11,6 +11,7 @@ class ParsersController < ApplicationController
     @s = TwseWebStatement.new(ticker, year, quarter)
     if @s.parse.nil?
       debug_log "failed to parse #{ticker} #{year}-Q#{quarter}"
+      flash[:warning] = '抓取失敗'
     end
   end
 
