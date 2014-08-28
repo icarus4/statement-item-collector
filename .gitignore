@@ -53,3 +53,5 @@ config/secrets.yml
 
 # doc folder
 /doc
+
+test.rb

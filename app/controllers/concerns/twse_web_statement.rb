@@ -8,7 +8,7 @@ class TwseWebStatement
 
   STATEMENT_FOLDER = Rails.root.join('doc')
 
-  def initialize(ticker, year, quarter)
+  def initialize(ticker, year, quarter, statement_subtype='combined')
     raise 'invalid year' if year > Time.now.year
     raise 'invalid quarter' if quarter > 4 or quarter < 1
 
@@ -17,7 +17,9 @@ class TwseWebStatement
     @quarter = quarter
     @country = 'tw'
     @statement_type = year >= 2013 ? 'ifrs' : 'gaap'
+    @statement_subtype = statement_subtype
     @category = get_category(ticker)
+    # TODO: add sub_category
   end
 
   def parse
@@ -25,34 +27,37 @@ class TwseWebStatement
     # FIXME: should refind @result to better indicate whether parsing is success or not
     @result = true
 
-    html_file = nil
-    ['combined', 'individual'].each do |statement_subtype|
+    # html_file = nil
+    # ['combined', 'individual'].each do |statement_subtype|
 
-      html_file = get_html_file(@ticker, @year, @quarter, 'combined')
+    #   html_file = get_html_file(@ticker, @year, @quarter, 'combined')
 
-      begin
-        raise if html_file.nil?
-        raise if html_file.size < 20000
-        @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
-        get_tables
-      rescue
-        next if statement_subtype == 'combined'
-        return nil if statement_subtype == 'individual'
-      end
-    end
-
-    # unless get_tables
-    #   debug_log 'cannot get table'
-    #   @result = nil
-    #   return nil
+    #   begin
+    #     raise if html_file.nil?
+    #     raise if html_file.size < 20000
+    #     @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+    #     get_tables
+    #   rescue
+    #     next if statement_subtype == 'combined'
+    #     return nil if statement_subtype == 'individual'
+    #   end
     # end
 
+    # # unless get_tables
+    # #   debug_log 'cannot get table'
+    # #   @result = nil
+    # #   return nil
+    # # end
 
-    # save to local
-    file_path = html_file_storing_path(@ticker, @year, @quarter)
-    unless File.exist?(file_path)
-      File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
-    end
+
+    # # save to local
+    # file_path = html_file_storing_path(@ticker, @year, @quarter)
+    # unless File.exist?(file_path)
+    #   File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    # end
+
+    # download and open web and xbrl statements
+    return nil if open_statements.nil?
 
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
@@ -82,6 +87,36 @@ class TwseWebStatement
 
 
   private
+
+  def open_statements
+
+    html_file = nil
+    xbrl_file = nil
+
+    # get web
+    retry_count = 0
+    loop do
+      return nil if retry_count > 3
+      html_file = get_html_file(@ticker, @year, @quarter, @statement_subtype)
+      break if html_file.present? && html_file.size > 20000
+      sleep 3 # 降低被 server 擋 request 的機率
+      retry_count += 1
+    end
+
+    # get xbrl
+    retry_count = 0
+    loop do
+      return nil if retry_count > 3
+      xbrl_file = get_xbrl_file
+      break if xbrl_file.present? && xbrl_file.size > 20000
+      sleep 3
+      retry_count += 1
+    end
+
+    @html_file = html_file
+    @xbrl_file = xbrl_file
+
+  end
 
   def parse_tables(table_nodeset)
     tr_array = []
@@ -374,7 +409,7 @@ class TwseWebStatement
     # get html file if already existed, otherwise get from TWSE
     if File.exist?(file_path)
       debug_log "opening #{ticker} (#{year}Q#{quarter}) local html file #{file_path}"
-      html_file = open_local_html_file(file_path)
+      html_file = open_local_file(file_path)
       @data_source = file_path
     else
       debug_log "getting #{ticker} (#{year}Q#{quarter}) html from TWSE"
@@ -383,6 +418,12 @@ class TwseWebStatement
     end
 
     return html_file
+  end
+
+  def get_xbrl_file
+    # TODO:...
+
+    xbrl_file = open_local_file('xbrl/tifrs-fr1-m1-ci-cr-2330-2014Q1.xml')
   end
 
   def get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
@@ -416,9 +457,6 @@ class TwseWebStatement
       # }
     )
 
-    # 降低被 server 擋 request 的機率
-    sleep 5
-
     # big5 => utf8
     ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     return ic.iconv(html_file)
@@ -428,7 +466,11 @@ class TwseWebStatement
     "#{STATEMENT_FOLDER}/#{ticker}-#{year}-Q#{quarter}.html"
   end
 
-  def open_local_html_file(name)
+  def xbrl_file_storing_path(ticker, year, quarter)
+    "#{STATEMENT_FOLDER}/xbrl/#{ticker}-#{year}-Q#{quarter}.html"
+  end
+
+  def open_local_file(name)
     return File.open(Rails.root.join('doc', name), 'r:UTF-8')
     # ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     # return ic.iconv(html_file.read)
