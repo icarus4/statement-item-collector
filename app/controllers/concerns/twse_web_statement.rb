@@ -59,14 +59,9 @@ class TwseWebStatement
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
 
     # parse and create statement items
-    begin
-      parse_tables(@bs_table_nodeset)
-      parse_tables(@is_table_nodeset)
-      parse_tables(@cf_table_nodeset)
-    rescue Exception => e
-       debug_log e.message
-       debug_log e.backtrace.inspect
-    end
+    parse_tables(@bs_table_nodeset)
+    parse_tables(@is_table_nodeset)
+    parse_tables(@cf_table_nodeset)
   end
 
   def self.financial_stocks
@@ -96,9 +91,9 @@ class TwseWebStatement
     _parse_each_table_item(tr_array, 0, 0, [], nil)
   end
 
-  # previous_item_array is an array contains previous items of each level
-  # ex: previous_item_array[1] is the previous item of the current level 1 item.
-  def _parse_each_table_item(tr_array, curr_index, previous_level, previous_item_array, item_stack)
+  # last_item_array is an array contains previous items of each level
+  # ex: last_item_array[1] is the previous item of the current level 1 item.
+  def _parse_each_table_item(tr_array, curr_index, previous_level, last_item_array, item_stack)
 
     # init item_stack
     item_stack = Stack.new if item_stack.nil?
@@ -114,8 +109,8 @@ class TwseWebStatement
     level = _get_tr_item_level(tr, name)
     has_value, value = _get_tr_item_value(tr)
 
-    # get previous_item of current level
-    previous_item = previous_item_array[level]
+    # get last_item of current level
+    last_item = last_item_array[level]
 
     if level == 0 # root
 
@@ -176,7 +171,7 @@ class TwseWebStatement
             brother.save!
           end
 
-        # if brother doesn't exist but there is any sibling exists, try to get the first sibling
+        # if brother doesn't exist but there is any sibling exists, it should be positioned above the first sibling
         elsif first_sibling = parent_item.children.where(previous_id: nil).first
           next_id = first_sibling.id
           item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
@@ -246,7 +241,7 @@ class TwseWebStatement
 
         # brother doesn't exist, so position under its previous item or under brother of its previous item
         else
-          raise 'previous item should not be nil' if previous_item.nil?
+          raise 'previous item should not be nil' if last_item.nil?
 
           # Set previous item to the brother of previous item if this previous item has value and has a brother
           # otherwise we will get things like as follows:
@@ -256,15 +251,29 @@ class TwseWebStatement
           # 現金及約當現金 共 11 檔               <== 這兩檔互為 brother，應該擺在一起
           #   庫存現金  共 5 檔
           #   零用及週轉金
-          if previous_item.has_value? && previous_item.brother.present?
-            previous_item = previous_item.brother
+          if last_item.has_value? && last_item.brother.present?
+            last_item = last_item.brother
           end
 
-          previous_id = previous_item.id
-          next_id = previous_item.next_id
+          previous_id = last_item.id
+          next_id = last_item.next_id
           item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
-          previous_item.next_id = item.id
-          previous_item.save!
+
+          next_item_of_last_item = last_item.next_item
+          if next_item_of_last_item.present?
+            # before insert current item:
+            #   previous item
+            #   next item of previous item
+            # after:
+            #   previous item
+            #   current item          <== insert here
+            #   next item of previous item
+            next_item_of_last_item.previous_id = item.id
+            next_item_of_last_item.save!
+          end
+
+          last_item.next_id = item.id
+          last_item.save!
         end # if brother = ....
       end # unless item = ...
 
@@ -284,9 +293,9 @@ class TwseWebStatement
     rescue
     end
 
-    previous_item_array[level] = item
+    last_item_array[level] = item
     item_stack.push(item)
-    _parse_each_table_item(tr_array, curr_index+1, level, previous_item_array, item_stack)
+    _parse_each_table_item(tr_array, curr_index+1, level, last_item_array, item_stack)
 
     return
   end

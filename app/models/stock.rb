@@ -14,7 +14,7 @@
 class Stock < ActiveRecord::Base
   has_many :statements, dependent: :destroy
 
-  has_many :item_stock_pairs, dependent: :destroy
+  has_many :item_stock_pairs, dependent: :destroy, autosave: false
   has_many :items, through: :item_stock_pairs
 
   # ticker should be a string and unique in a country
