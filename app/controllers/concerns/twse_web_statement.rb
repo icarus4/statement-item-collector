@@ -59,6 +59,16 @@ class TwseWebStatement
     # download and open web and xbrl statements
     return nil if open_statements.nil?
 
+    # get BS/IS/CF html tables
+    return nil if get_tables.nil?
+
+    # save to local
+    file_path = html_file_storing_path(@ticker, @year, @quarter)
+    unless File.exist?(file_path)
+      File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    end
+
+
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
@@ -91,30 +101,37 @@ class TwseWebStatement
   def open_statements
 
     html_file = nil
-    xbrl_file = nil
+    # FIXME: skip xbrl first
+    # xbrl_file = nil
 
-    # get web
+    # get html
     retry_count = 0
     loop do
-      return nil if retry_count > 3
+      if retry_count > 3
+        return nil
+      end
       html_file = get_html_file(@ticker, @year, @quarter, @statement_subtype)
       break if html_file.present? && html_file.size > 20000
       sleep 3 # 降低被 server 擋 request 的機率
       retry_count += 1
     end
 
-    # get xbrl
-    retry_count = 0
-    loop do
-      return nil if retry_count > 3
-      xbrl_file = get_xbrl_file
-      break if xbrl_file.present? && xbrl_file.size > 20000
-      sleep 3
-      retry_count += 1
-    end
+    # FIXME: skip xbrl first
+    # # get xbrl
+    # retry_count = 0
+    # loop do
+    #   if retry_count > 3
+    #     return nil
+    #   end
+    #   xbrl_file = get_xbrl_file
+    #   break if xbrl_file.present? && xbrl_file.size > 20000
+    #   sleep 3
+    #   retry_count += 1
+    # end
 
     @html_file = html_file
-    @xbrl_file = xbrl_file
+    # FIXME: skip xbrl first
+    # @xbrl_file = xbrl_file
 
   end
 
@@ -379,8 +396,9 @@ class TwseWebStatement
 
     # check whether data is existed or not
     if @doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
-      debug_log "查無資料，full html content:\n#{@doc}"
-      raise '查無資料'
+      # debug_log "查無資料，full html content:\n#{@doc}"
+      debug_log '查無資料'
+      return nil
     end
 
     @html = @doc.at_css('html html')
@@ -393,7 +411,7 @@ class TwseWebStatement
     raise 'Failed to get income statement tables' unless @is_table_nodeset.is_a?(Nokogiri::XML::Element)
     raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
 
-    # todo: check content is valid or not
+    # TODO: check content is valid or not
 
     @bs_content = @bs_table_nodeset.try(:content)
     @is_content = @is_table_nodeset.try(:content)
@@ -463,7 +481,7 @@ class TwseWebStatement
   end
 
   def html_file_storing_path(ticker, year, quarter)
-    "#{STATEMENT_FOLDER}/#{ticker}-#{year}-Q#{quarter}.html"
+    "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}.html"
   end
 
   def xbrl_file_storing_path(ticker, year, quarter)

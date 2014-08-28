@@ -9,7 +9,9 @@ class ParsersController < ApplicationController
     quarter = params[:quarter].to_i
 
     @s = TwseWebStatement.new(ticker, year, quarter)
-    @s.parse
+    if @s.parse.nil?
+      debug_log "failed to parse #{ticker} #{year}-Q#{quarter}"
+    end
   end
 
   def parse_financial_stocks
@@ -49,6 +51,12 @@ class ParsersController < ApplicationController
     @sub_category = params[:sub_category]
 
     @item = Item.where(name: table_name, s_type: 'ifrs').first
+  end
+
+  private
+
+  def debug_log(str)
+    Rails.logger.debug str
   end
 
 end
