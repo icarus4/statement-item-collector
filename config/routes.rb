@@ -6,9 +6,10 @@ Rails.application.routes.draw do
   # root 'welcome#index'
   root 'parsers#index'
 
-  get 'parsers' => 'parsers#ifrs'
+  # get 'parsers' => 'parsers#ifrs'
   get 'parsers/parse/' => 'parsers#parse'
   get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
+  get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
   get 'parsers/parse_financial_stocks(/:start_year/:start_quarter/:end_year/:end_quarter)' => 'parsers#parse_financial_stocks'
 
   # post 'parsers/search/:search' => 'parsers#search'

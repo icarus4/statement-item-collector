@@ -54,6 +54,22 @@ class ParsersController < ApplicationController
     @item = Item.where(name: table_name, s_type: 'ifrs').first
   end
 
+  def gaap
+    case params[:table_name]
+      when 'bs' then table_name = '資產負債表'
+      when 'is' then table_name = '損益表'
+      when 'cf' then table_name = '現金流量表'
+      else table_name = 'root'
+    end
+
+    @category = params[:category]
+    @sub_category = params[:sub_category]
+
+    @item = Item.where(name: table_name, s_type: 'gaap').first
+    render :ifrs
+  end
+
+
   private
 
   def debug_log(str)

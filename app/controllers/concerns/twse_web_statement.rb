@@ -74,9 +74,15 @@ class TwseWebStatement
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
 
     # parse and create statement items
-    parse_tables(@bs_table_nodeset)
-    parse_tables(@is_table_nodeset)
-    parse_tables(@cf_table_nodeset)
+    if @statement_type == 'ifrs'
+      parse_tables(@bs_table_nodeset)
+      parse_tables(@is_table_nodeset)
+      parse_tables(@cf_table_nodeset)
+    elsif @statement_type == 'gaap'
+      parse_tables(@gaap_table_nodeset)
+    else
+      raise "line:#{__LINE__} error statement type: #{@statement_type}"
+    end
 
     return true
   end
@@ -384,7 +390,7 @@ class TwseWebStatement
     # level 1: 資產負債表 / 損益表 / 現金流量表
     level = 1 + _get_tr_item_fullwidth_whitespace_count(tr)
     level = 0 if name == '會計項目' || name == '會計科目'
-    raise "Failed to get level. (level = #{level}, name = #{name})" if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表')
+    raise "Failed to get level. (level = #{level}, name = #{name})" if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表' and name != '損益表')
     return level
   end
 
@@ -441,7 +447,9 @@ class TwseWebStatement
         return nil
       end
 
-      @bs_table_nodeset, @is_table_nodeset, @cf_table_nodeset = get_gaap_tables(doc)
+      # @bs_table_nodeset, @is_table_nodeset, @cf_table_nodeset = get_gaap_tables(doc)
+      @gaap_table_nodeset = doc.css('html body div table')[1]
+
     else
       raise 'wrong statement_type'
     end
