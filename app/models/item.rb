@@ -73,8 +73,8 @@ class Item < ActiveRecord::Base
 
   def name_should_be_unique_within_siblings
     self.siblings.each do |sibling|
-      if sibling.name == self.name and sibling.has_value == self.has_value
-        errors.add(:name, 'is already existed within siblins')
+      if sibling.name == self.name and sibling.has_value == self.has_value and sibling.s_type == self.s_type
+        errors.add(:name, 'is already existed within siblings')
       end
     end
   end
