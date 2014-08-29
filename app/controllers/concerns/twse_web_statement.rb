@@ -69,7 +69,6 @@ class TwseWebStatement
       File.open(file_path, 'w:UTF-8') {|f| f.write(@html_file)}
     end
 
-
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
@@ -384,7 +383,7 @@ class TwseWebStatement
     # level 0: 會計項目
     # level 1: 資產負債表 / 損益表 / 現金流量表
     level = 1 + _get_tr_item_fullwidth_whitespace_count(tr)
-    level = 0 if name == '會計項目'
+    level = 0 if name == '會計項目' || name == '會計科目'
     raise "Failed to get level. (level = #{level}, name = #{name})" if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表')
     return level
   end
@@ -416,14 +415,13 @@ class TwseWebStatement
   def get_tables(doc, statement_type)
 
     if statement_type == 'ifrs'
+
       # check whether data is existed or not
       if doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
         # debug_log "查無資料，full html content:\n#{doc}"
-        debug_log '查無資料'
+        debug_log "line:#{__LINE__} 查無資料"
         return nil
       end
-
-      @html = doc.at_css('html html')
 
       # get 資產負債表 / 損益表 / 現金流量表
       @bs_table_nodeset = doc.css('html body center table')[1]
@@ -434,12 +432,16 @@ class TwseWebStatement
       raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
 
     elsif statement_type == 'gaap'
+
       # check whether data is existed or not
       if doc.css('table').size < 3
         # debug_log "查無資料，full html content:\n#{doc}"
-        debug_log '查無資料'
+        debug_log "line:#{__LINE__} 查無資料"
+        debug_log doc
         return nil
       end
+
+      @bs_table_nodeset, @is_table_nodeset, @cf_table_nodeset = get_gaap_tables(doc)
     else
       raise 'wrong statement_type'
     end
@@ -451,6 +453,56 @@ class TwseWebStatement
     @cf_content = @cf_table_nodeset.try(:content)
 
     return true
+  end
+
+  def get_gaap_tables(doc)
+
+    trs = doc.css('html body div table')[1].css('tr')
+
+    state = nil
+    bs_tr_array = []; is_tr_array = []; cf_tr_array = []
+
+    trs.each do |tr|
+      begin
+        state = 'bs' if tr.css('th').first.content == '資產負債表'
+        state = 'is' if tr.css('th').first.content == '損益表'
+        state = 'cf' if tr.css('th').first.content == '現金流量表'
+      rescue
+      end
+
+      case state
+        when 'bs'; bs_tr_array << tr
+        when 'is'; is_tr_array << tr
+        when 'cf'; cf_tr_array << tr
+      end
+    end
+
+    bs_table_nodeset = Nokogiri::XML('<table></table>').root
+    is_table_nodeset = Nokogiri::XML('<table></table>').root
+    cf_table_nodeset = Nokogiri::XML('<table></table>').root
+
+    bs_table_nodeset = fill_up_table(bs_table_nodeset, bs_tr_array)
+    is_table_nodeset = fill_up_table(is_table_nodeset, is_tr_array)
+    cf_table_nodeset = fill_up_table(cf_table_nodeset, cf_tr_array)
+
+    return bs_table_nodeset, is_table_nodeset, cf_table_nodeset
+    # ap is_table_nodeset.children[3]; exit
+
+  end
+
+  def fill_up_table(table_nodeset, tr_array)
+    raise 'invalid table_nodeset' unless table_nodeset.is_a?(Nokogiri::XML::Element)
+    raise 'array should not be empty' if tr_array.empty?
+
+    tr_array.each do |tr|
+      if table_nodeset.last_element_child.nil?
+        table_nodeset.children = tr
+      else
+        table_nodeset.last_element_child.after(tr)
+      end
+    end
+
+    return table_nodeset
   end
 
   def get_html_file(ticker, year, quarter, statement_type, statement_subtype)
@@ -531,7 +583,6 @@ class TwseWebStatement
       resp = conn.post(urn, form_data)
 
       html_file = resp.body
-      ap html_file
     else
       raise 'error statement_type'
     end
