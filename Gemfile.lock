@@ -227,7 +227,6 @@ DEPENDENCIES
   jquery-rails
   nokogiri
   rails (~> 4.1.4)
-  rb-fsevent (~> 0.9.4)
   rest-client (~> 1.7.2)
   rspec-rails (~> 3.0.0)
   sass-rails (~> 4.0.3)

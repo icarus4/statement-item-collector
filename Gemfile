@@ -54,7 +54,7 @@ group :development, :test do
   gem 'guard-rspec', '~> 4.2.10'
   gem 'guard-livereload'
   gem 'spring-commands-rspec', '~> 1.0.2'
-  gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
+  # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
 
 
