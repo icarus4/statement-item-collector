@@ -15,7 +15,24 @@ class ParsersController < ApplicationController
     end
   end
 
+  def parse_bank_stocks
+    parse_stocks(TwseWebStatement.bank_stocks)
+  end
+
+  def parse_assurance_stocks
+    parse_stocks(TwseWebStatement.assurance_stocks)
+  end
+
+  def parse_broker_stocks
+    parse_stocks(TwseWebStatement.broker_stocks)
+  end
+
   def parse_financial_stocks
+    parse_stocks(TwseWebStatement.financial_stocks)
+  end
+
+
+  def parse_stocks(stock_array)
     start_year = 2013
     start_quarter = 1
     end_year = 2014
@@ -26,7 +43,7 @@ class ParsersController < ApplicationController
     end_year = params[:end_year].to_i if params[:end_year]
     end_quarter = params[:end_quarter].to_i if params[:end_quarter]
 
-    TwseWebStatement.bank_stocks.each do |ticker|
+    stock_array.each do |ticker|
       (start_year..end_year).to_a.each do |year|
 
         _start_quarter = year == start_year ? start_quarter : 1
