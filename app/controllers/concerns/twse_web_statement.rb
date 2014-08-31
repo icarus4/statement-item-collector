@@ -26,6 +26,7 @@ class TwseWebStatement
 
     # FIXME: should refind @result to better indicate whether parsing is success or not
     @result = true
+    html_file = nil
 
     # html_file = nil
     # ['combined', 'individual'].each do |statement_subtype|
@@ -57,10 +58,10 @@ class TwseWebStatement
     # end
 
     # download and open web and xbrl statements
-    return nil if open_statements.nil?
+    return nil if (html_file = open_statements).nil?
 
     # get BS/IS/CF html tables
-    @doc = Nokogiri::HTML(@html_file, nil, 'UTF-8')
+    @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
     return nil if get_tables(@doc, @statement_type).nil?
 
     # save to local
@@ -155,7 +156,7 @@ class TwseWebStatement
     #   retry_count += 1
     # end
 
-    @html_file = html_file
+    return html_file
     # FIXME: skip xbrl first
     # @xbrl_file = xbrl_file
 
@@ -631,6 +632,7 @@ class TwseWebStatement
   end
 
   def get_sub_category(ticker)
+    ticker = ticker.to_i if ticker.is_a?(String)
     return 'bank' if TWSE_FINANCE_STOCK_LIST[:bank].include?(ticker)
     return 'assurance' if TWSE_FINANCE_STOCK_LIST[:assurance].include?(ticker)
     return 'broker' if TWSE_FINANCE_STOCK_LIST[:broker].include?(ticker)
