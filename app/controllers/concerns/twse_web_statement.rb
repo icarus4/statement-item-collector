@@ -19,7 +19,7 @@ class TwseWebStatement
     @statement_type = year >= 2013 ? 'ifrs' : 'gaap'
     @statement_subtype = statement_subtype
     @category = get_category(ticker)
-    # TODO: add sub_category
+    @sub_category = get_sub_category(ticker)
   end
 
   def parse
@@ -70,7 +70,7 @@ class TwseWebStatement
     end
 
     # get or create stock and statement data
-    @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
+    @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category, sub_category: @sub_category)
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
 
     # parse and create statement items
@@ -628,6 +628,13 @@ class TwseWebStatement
     else
       return 'common'
     end
+  end
+
+  def get_sub_category(ticker)
+    return 'bank' if TWSE_FINANCE_STOCK_LIST[:bank].include?(ticker)
+    return 'assurance' if TWSE_FINANCE_STOCK_LIST[:assurance].include?(ticker)
+    return 'broker' if TWSE_FINANCE_STOCK_LIST[:broker].include?(ticker)
+    return 'common'
   end
 
   def debug_log(str)
