@@ -65,10 +65,10 @@ class TwseWebStatement
     return nil if get_tables(@doc, @statement_type).nil?
 
     # save to local
-    file_path = html_file_storing_path(@ticker, @year, @quarter, @statement_type, @statement_subtype)
-    unless File.exist?(file_path)
-      File.open(file_path, 'w:UTF-8') {|f| f.write(@html_file)}
-    end
+    # file_path = html_file_storing_path(@ticker, @year, @quarter, @statement_type, @statement_subtype)
+    # unless File.exist?(file_path)
+    #   File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    # end
 
     # get or create stock and statement data
     @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category, sub_category: @sub_category)
