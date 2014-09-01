@@ -21,21 +21,21 @@ class ParsersController < ApplicationController
   end
 
   def parse_insurance_stocks
-    stocks = TwseWebStatement.bank_stocks
+    stocks = TwseWebStatement.insurance_stocks
     stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
     parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_broker_stocks
-    stocks = TwseWebStatement.bank_stocks
+    stocks = TwseWebStatement.broker_stocks
     stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
     parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_financial_stocks
-    stocks = TwseWebStatement.bank_stocks
+    stocks = TwseWebStatement.financial_stocks
     stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
     parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
