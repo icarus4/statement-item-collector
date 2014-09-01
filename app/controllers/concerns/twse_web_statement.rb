@@ -387,7 +387,13 @@ class TwseWebStatement
     # level 1: 資產負債表 / 損益表 / 現金流量表
     level = 1 + _get_tr_item_fullwidth_whitespace_count(tr)
     level = 0 if name == '會計項目' || name == '會計科目'
-    raise "Failed to get level. (level = #{level}, name = #{name})" if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表' and name != '損益表')
+    if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表' and name != '損益表')
+      # This is a special case in TWSE: 2845 2010Q3
+      # 其 cashflow 之 "其他補充揭露資訊" 及子項前的空白皆為半型，且一個 indent level 有 4 個空白
+      halfwidth_whitespaces = _get_tr_item_halfwidth_whitespace_count(tr)
+      raise "Failed to get level. (level = #{level}, name = #{name})" if (halfwidth_whitespaces % 4) != 0
+      level = 1 + (halfwidth_whitespaces / 4)
+    end
     return level
   end
 
@@ -411,6 +417,13 @@ class TwseWebStatement
   def _get_tr_item_fullwidth_whitespace_count(tr)
     raise 'invalid input (should be Nokogiri nodeset)' unless tr.is_a?(Nokogiri::XML::Element)
     whitespace_count = tr.children[0].content[/\A　*/].size # 計算全形空白數量
+    raise 'whitespace_count should be equal to or larger than 0' if whitespace_count < 0
+    return whitespace_count
+  end
+
+  def _get_tr_item_halfwidth_whitespace_count(tr)
+    raise 'invalid input (should be Nokogiri nodeset)' unless tr.is_a?(Nokogiri::XML::Element)
+    whitespace_count = tr.children[0].content[/\A[[:space:]]*/].size # 計算半形形空白數量，包含 &npsb
     raise 'whitespace_count should be equal to or larger than 0' if whitespace_count < 0
     return whitespace_count
   end
