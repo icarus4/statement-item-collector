@@ -1,8 +1,16 @@
 <h3><%= link_to '<< 回前頁', controller: 'parsers', action: 'index' %></h3>
 
+<% if @item %>
+
 <table id='item-view' class="table table-striped table-condensed">
   <tbody>
     <%= render partial: 'parsers/item_with_order', locals: {item: @item.children.first_item} %>
     <%#= render partial: 'parsers/item', collection: @item.children, as: :item %>
   </tbody>
 </table>
+
+<% else %>
+
+<div class="alert alert-warning">沒有資料哦！是不是忘了先抓資料？</div>
+
+<% end %>

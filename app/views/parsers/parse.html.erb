@@ -1,6 +1,6 @@
 <h3><%= link_to '<< 回前頁', controller: 'parsers', action: 'index' %></h3>
 <% if flash[:warning] || flash[:notice] || flash[:alert] %>
-  <div class="alert alert-danger">查無資料</div>
+  <div class="alert alert-danger"><%= flash[:warning] %> <%= flash[:notice] %> <%= flash[:alert] %></div>
 <% elsif @s.statement_type == 'ifrs' %>
   <div class="alert alert-success"><%= "#{@s.ticker} (#{@s.category}), #{@s.year}Q#{@s.quarter}" %><br>data source: <%= @s.data_source %><br>結果如下：</div>
   <h2>資產負債表</h2>

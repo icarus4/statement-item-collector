@@ -2,9 +2,12 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-div#search-area
-  margin: 40px auto
-  max-width: 400px
+div.search-area
+  margin: 10px auto 10px
+  text-align: center
+  max-width: 800px
+  *
+    margin: 0 10px 0 0
 
 span.toggleable-switch
   &:hover
@@ -22,6 +25,16 @@ table#item-view
     list-style-type: none
 
 div.result-links
-  // text-align: center
+  
   margin: 0 auto
-  max-width: 300px
+  min-width: 800px
+
+div.result-links > ul
+  display: inline
+  float: left
+  list-style-type: none
+
+div.result-links > ul > li
+  margin: 0 10px 0 10px
+  display: inline
+  float: left

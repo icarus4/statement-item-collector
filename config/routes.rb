@@ -7,13 +7,13 @@ Rails.application.routes.draw do
   root 'parsers#index'
 
   # get 'parsers' => 'parsers#ifrs'
-  get 'parsers/parse/' => 'parsers#parse'
+  post 'parsers/parse/' => 'parsers#parse'
   get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
   get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
-  get 'parsers/parse_bank_stocks(/:start_year/:start_quarter/:end_year/:end_quarter)' => 'parsers#parse_bank_stocks'
-  get 'parsers/parse_assurance_stocks(/:start_year/:start_quarter/:end_year/:end_quarter)' => 'parsers#parse_assurance_stocks'
-  get 'parsers/parse_broker_stocks(/:start_year/:start_quarter/:end_year/:end_quarter)' => 'parsers#parse_broker_stocks'
-  get 'parsers/parse_financial_stocks(/:start_year/:start_quarter/:end_year/:end_quarter)' => 'parsers#parse_financial_stocks'
+  post 'parsers/parse_bank_stocks' => 'parsers#parse_bank_stocks'
+  post 'parsers/parse_assurance_stocks' => 'parsers#parse_assurance_stocks'
+  post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
+  post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
 
   # post 'parsers/search/:search' => 'parsers#search'
 

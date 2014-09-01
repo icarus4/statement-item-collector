@@ -8,7 +8,7 @@ class TwseWebStatement
 
   STATEMENT_FOLDER = Rails.root.join('doc')
 
-  def initialize(ticker, year, quarter, statement_subtype='combined')
+  def initialize(ticker, year, quarter, statement_subtype='c')
     raise 'invalid year' if year > Time.now.year
     raise 'invalid quarter' if quarter > 4 or quarter < 1
 
@@ -25,13 +25,13 @@ class TwseWebStatement
   def parse
 
     # FIXME: should refind @result to better indicate whether parsing is success or not
-    @result = true
+    @result = nil
     html_file = nil
 
     # html_file = nil
-    # ['combined', 'individual'].each do |statement_subtype|
+    # ['c', 'i'].each do |statement_subtype|
 
-    #   html_file = get_html_file(@ticker, @year, @quarter, 'combined')
+    #   html_file = get_html_file(@ticker, @year, @quarter, 'c')
 
     #   begin
     #     raise if html_file.nil?
@@ -39,8 +39,8 @@ class TwseWebStatement
     #     @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
     #     get_tables
     #   rescue
-    #     next if statement_subtype == 'combined'
-    #     return nil if statement_subtype == 'individual'
+    #     next if statement_subtype == 'c'
+    #     return nil if statement_subtype == 'c'
     #   end
     # end
 
@@ -125,12 +125,14 @@ class TwseWebStatement
       begin
         doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
       rescue
+        @result = 'error when open file by Nokogiri'
         debug_log 'error when open file by Nokogiri'
         return nil
       end
 
       # 查無資料或其他無資料的狀況
       if doc.css('table').size < 3
+        @result = '查無資料或其他無資料的狀況'
         debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
         return nil
       end
@@ -420,6 +422,7 @@ class TwseWebStatement
       # check whether data is existed or not
       if doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
         # debug_log "查無資料，full html content:\n#{doc}"
+        @result = '查無資料'
         debug_log "line:#{__LINE__} 查無資料"
         return nil
       end
@@ -437,6 +440,7 @@ class TwseWebStatement
       # check whether data is existed or not
       if doc.css('table').size < 3
         # debug_log "查無資料，full html content:\n#{doc}"
+        @result = '查無資料'
         debug_log "line:#{__LINE__} 查無資料"
         debug_log doc
         return nil
@@ -534,8 +538,11 @@ class TwseWebStatement
 
   def get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_type, statement_subtype)
 
+    debug_log "downloading #{ticker} #{year} Q#{quarter} #{statement_type} #{statement_subtype} statement..."
+
     if statement_type == 'ifrs'
-      report_id = statement_subtype == 'combined' ? 'C' : 'A'
+
+      report_id = statement_subtype == 'c' ? 'C' : 'A'
       url = 'http://mops.twse.com.tw/server-java/t164sb01'
 
       form_data = {
@@ -557,15 +564,16 @@ class TwseWebStatement
       rescue
         sleep 10 + conn_counter * 5
         conn_counter += 1
-        return nil if conn_counter > 10
+        if conn_counter > 10
+          @result = 'cannot connect to TWSE server'
+          return nil
+        end
         retry
       end
 
     elsif statement_type == 'gaap'
 
-      debug_log "downloading #{ticker} #{year} Q#{quarter} #{statement_subtype} gaap statement..."
-
-      report_id = statement_subtype == 'combined' ? 'B' : 'A'
+      report_id = statement_subtype == 'c' ? 'B' : 'A'
       url = 'http://mops.twse.com.tw'
       urn = '/server-java/t147sb02'
       form_data = {
@@ -589,7 +597,11 @@ class TwseWebStatement
       rescue
         sleep 10 + conn_counter * 5
         conn_counter += 1
-        return nil if conn_counter > 10
+        if conn_counter > 10
+          @result = 'cannot connect to TWSE server'
+          return nil
+        end
+
         retry
       else
         html_file = resp.body
@@ -605,6 +617,7 @@ class TwseWebStatement
     begin
       iconv_html_file = ic.iconv(html_file)
     rescue
+      @result = 'iconv fail'
       return nil
     end
 
@@ -617,7 +630,7 @@ class TwseWebStatement
     end
 
     if statement_type == 'gaap'
-      sub_type_name = statement_subtype == 'combined' ? 'c' : 'i'
+      sub_type_name = statement_subtype == 'c' ? 'c' : 'i'
       return "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}-#{sub_type_name}.html"
     end
   end

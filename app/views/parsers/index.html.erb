@@ -1,10 +1,81 @@
 <!-- 抓取資料 -->
-<div id="search-area">
-<%= form_tag({controller: 'parsers', action: 'parse'}, method: 'get', id: 'search-form') do %>
-  <%= label_tag(:ticker, "抓取 TWSE 股號: ") %> <%= number_field_tag(:ticker, nil, min: 1000, max: 9999) %>
-  <%= select_tag(:year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009] ], 1)) %>
-  <%= select_tag(:quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4]], 1)) %>
-  <%= submit_tag("Parse") %>
+<div class="search-area">
+<%= form_tag({controller: 'parsers', action: 'parse'}, method: 'post', id: 'search-form') do %>
+  <span>抓個股</span>
+  <%= label_tag(:ticker, "TWSE 股號: ") %> <%= number_field_tag(:ticker, nil, min: 1000, max: 9999) %>
+  <span> From: </span>
+  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span> To: </span>
+  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span>類型:</span>
+  <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= submit_tag("抓資料") %>
+<% end %>
+</div>
+
+<hr>
+
+<div class="search-area">
+<%= form_tag({controller: 'parsers', action: 'parse_bank_stocks'}, method: 'post', id: 'search-form') do %>
+  <span>抓<b>銀行類股</b> From: </span>
+  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span> To: </span>
+  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span>類型:</span>
+  <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= submit_tag("抓資料") %>
+<% end %>
+</div>
+
+<hr>
+
+<div class="search-area">
+<%= form_tag({controller: 'parsers', action: 'parse_assurance_stocks'}, method: 'post', id: 'search-form') do %>
+  <span>抓<b>保險類股</b> From: </span>
+  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span> To: </span>
+  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span>類型:</span>
+  <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= submit_tag("抓資料") %>
+<% end %>
+</div>
+
+<hr>
+
+<div class="search-area">
+<%= form_tag({controller: 'parsers', action: 'parse_broker_stocks'}, method: 'post', id: 'search-form') do %>
+  <span>抓<b>證券類股</b> From: </span>
+  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span> To: </span>
+  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span>類型:</span>
+  <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= submit_tag("抓資料") %>
+<% end %>
+</div>
+
+<hr>
+
+<div class="search-area">
+<%= form_tag({controller: 'parsers', action: 'parse_financial_stocks'}, method: 'post', id: 'search-form') do %>
+  <span>抓<b>所有金融類股</b> From: </span>
+  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span> To: </span>
+  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
+  <span>類型:</span>
+  <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= submit_tag("抓資料") %>
 <% end %>
 </div>
 
@@ -13,13 +84,42 @@
 <!-- 顯示資料 -->
 <div style=''>
   <div class='result-links'>
+    <h3>查看分析資料</h3>
     <ul>
-      <li>銀行股
+      <li>銀行類股
         <ul>
-          <li><%= link_to '顯示 IFRS 全部分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></li>
-          <li><%= link_to'顯示 IFRS 資產負債表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
-          <li><%= link_to '顯示 IFRS 綜合損益表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
-          <li><%= link_to '顯示 IFRS 現金流量表分析資料', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 全部', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 資產負債表', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 綜合損益表', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 現金流量表', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 全部', {controller: 'parsers', action: 'gaap', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 資產負債表', {controller: 'parsers', action: 'gaap', table_name: 'bs', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 綜合損益表', {controller: 'parsers', action: 'gaap', table_name: 'is', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 現金流量表', {controller: 'parsers', action: 'gaap', table_name: 'cf', category: 'finance', sub_category: 'bank'}, target: '_blank' %></li>
+        </ul>
+      </li>
+      <li>保險類股
+        <ul>
+          <li><%= link_to 'IFRS 全部', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 資產負債表', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 綜合損益表', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 現金流量表', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 全部', {controller: 'parsers', action: 'gaap', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 資產負債表', {controller: 'parsers', action: 'gaap', table_name: 'bs', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 綜合損益表', {controller: 'parsers', action: 'gaap', table_name: 'is', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 現金流量表', {controller: 'parsers', action: 'gaap', table_name: 'cf', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+        </ul>
+      </li>
+      <li>證券類股
+        <ul>
+          <li><%= link_to 'IFRS 全部', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 資產負債表', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 綜合損益表', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 現金流量表', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 全部', {controller: 'parsers', action: 'gaap', table_name: 'root'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 資產負債表', {controller: 'parsers', action: 'gaap', table_name: 'bs', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 綜合損益表', {controller: 'parsers', action: 'gaap', table_name: 'is', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 現金流量表', {controller: 'parsers', action: 'gaap', table_name: 'cf', category: 'finance', sub_category: 'broker'}, target: '_blank' %></li>
         </ul>
       </li>
     </ul>

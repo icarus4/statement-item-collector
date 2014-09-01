@@ -1,37 +1,37 @@
 class ParsersController < ApplicationController
 
+  before_action :get_parse_params, except: [:ifrs, :gaap, :index]
+
   def index
   end
 
   def parse
     ticker  = params[:ticker]
-    year    = params[:year].to_i
-    quarter = params[:quarter].to_i
+    statement_subtype = params[:s_subtype]
 
-    @s = TwseWebStatement.new(ticker, year, quarter)
-    if @s.parse.nil?
-      debug_log "failed to parse #{ticker} #{year}-Q#{quarter}"
-      flash[:warning] = '抓取失敗'
-    end
+    raise 's_subtype should be c or i' if statement_subtype != 'c' && statement_subtype != 'i'
+
+    parse_stocks([]<<ticker, @start_year, @start_quarter, @end_year, @end_quarter, statement_subtype)
+
   end
 
   def parse_bank_stocks
-    parse_stocks(TwseWebStatement.bank_stocks)
+    parse_stocks(TwseWebStatement.bank_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_assurance_stocks
-    parse_stocks(TwseWebStatement.assurance_stocks)
+    parse_stocks(TwseWebStatement.assurance_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_broker_stocks
-    parse_stocks(TwseWebStatement.broker_stocks)
+    parse_stocks(TwseWebStatement.broker_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_financial_stocks
-    parse_stocks(TwseWebStatement.financial_stocks)
+    parse_stocks(TwseWebStatement.financial_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
@@ -69,17 +69,23 @@ class ParsersController < ApplicationController
 
   private
 
-  def parse_stocks(stock_array)
-    start_year = 2013
-    start_quarter = 1
-    end_year = 2014
-    end_quarter = 1
+  def get_parse_params
+    @start_year = @start_quarter = @end_year = @end_quarter = @s_subtype = nil
+    @start_year = params[:start_year].to_i if params[:start_year]
+    @start_quarter = params[:start_quarter].to_i if params[:start_quarter]
+    @end_year = params[:end_year].to_i if params[:end_year]
+    @end_quarter = params[:end_quarter].to_i if params[:end_quarter]
+    @s_subtype = params[:s_subtype]
+  end
 
-    start_year = params[:start_year].to_i if params[:start_year]
-    start_quarter = params[:start_quarter].to_i if params[:start_quarter]
-    end_year = params[:end_year].to_i if params[:end_year]
-    end_quarter = params[:end_quarter].to_i if params[:end_quarter]
+  def parse_stocks(stock_array, start_year=nil, start_quarter=nil, end_year=nil, end_quarter=nil, s_subtype=nil)
+    start_year = start_year.presence || 2013
+    start_quarter = start_quarter.presence || 1
+    end_year = end_year.presence || 2014
+    end_quarter = end_quarter.presence || 1
+    s_subtype = s_subtype.presence || 'c'
 
+    parse_counter = 0
     stock_array.each do |ticker|
       (start_year..end_year).to_a.each do |year|
 
@@ -87,12 +93,17 @@ class ParsersController < ApplicationController
         _end_quarter = year == end_year ? end_quarter : 4
 
         (_start_quarter.._end_quarter).to_a.each do |quarter|
-          s = TwseWebStatement.new(ticker.to_s, year, quarter)
-          s.parse
+          # sleep for a while successively parse 20 statements
+          if parse_counter > 20
+            sleep 30
+            parse_counter = 0
+          end
+          @s = TwseWebStatement.new(ticker.to_s, year, quarter, s_subtype)
+          @s.parse
+          flash[:warning] = @s.result
+          parse_counter += 1
         end
-
       end
-      sleep 60
     end
   end
 
