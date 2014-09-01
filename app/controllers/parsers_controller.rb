@@ -53,7 +53,9 @@ class ParsersController < ApplicationController
           s = TwseWebStatement.new(ticker.to_s, year, quarter)
           s.parse
         end
+
       end
+      sleep 60
     end
   end
 
