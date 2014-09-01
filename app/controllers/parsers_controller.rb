@@ -35,34 +35,6 @@ class ParsersController < ApplicationController
     render :index
   end
 
-
-  def parse_stocks(stock_array)
-    start_year = 2013
-    start_quarter = 1
-    end_year = 2014
-    end_quarter = 1
-
-    start_year = params[:start_year].to_i if params[:start_year]
-    start_quarter = params[:start_quarter].to_i if params[:start_quarter]
-    end_year = params[:end_year].to_i if params[:end_year]
-    end_quarter = params[:end_quarter].to_i if params[:end_quarter]
-
-    stock_array.each do |ticker|
-      (start_year..end_year).to_a.each do |year|
-
-        _start_quarter = year == start_year ? start_quarter : 1
-        _end_quarter = year == end_year ? end_quarter : 4
-
-        (_start_quarter.._end_quarter).to_a.each do |quarter|
-          s = TwseWebStatement.new(ticker.to_s, year, quarter)
-          s.parse
-        end
-
-      end
-      sleep 60
-    end
-  end
-
   def ifrs
     case params[:table_name]
       when 'bs' then table_name = '資產負債表'
@@ -94,6 +66,33 @@ class ParsersController < ApplicationController
 
 
   private
+
+  def parse_stocks(stock_array)
+    start_year = 2013
+    start_quarter = 1
+    end_year = 2014
+    end_quarter = 1
+
+    start_year = params[:start_year].to_i if params[:start_year]
+    start_quarter = params[:start_quarter].to_i if params[:start_quarter]
+    end_year = params[:end_year].to_i if params[:end_year]
+    end_quarter = params[:end_quarter].to_i if params[:end_quarter]
+
+    stock_array.each do |ticker|
+      (start_year..end_year).to_a.each do |year|
+
+        _start_quarter = year == start_year ? start_quarter : 1
+        _end_quarter = year == end_year ? end_quarter : 4
+
+        (_start_quarter.._end_quarter).to_a.each do |quarter|
+          s = TwseWebStatement.new(ticker.to_s, year, quarter)
+          s.parse
+        end
+
+      end
+      sleep 60
+    end
+  end
 
   def debug_log(str)
     Rails.logger.debug str
