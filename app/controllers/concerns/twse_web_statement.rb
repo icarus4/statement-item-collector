@@ -63,7 +63,7 @@ class TwseWebStatement
     # get BS/IS/CF html tables
     @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
     if get_tables(@doc, @statement_type).nil?
-      html_file.close
+      html_file
       return nil
     end
 
@@ -85,11 +85,11 @@ class TwseWebStatement
     elsif @statement_type == 'gaap'
       parse_tables(@gaap_table_nodeset)
     else
-      html_file.close
+      html_file
       raise "line:#{__LINE__} error statement type: #{@statement_type}"
     end
 
-    html_file.close
+    html_file
     return true
   end
 
@@ -132,14 +132,14 @@ class TwseWebStatement
           doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
         rescue
           debug_log 'error when open file by Nokogiri'
-          html_file.close
+          html_file
           return nil
         end
 
         # 查無資料或其他無資料的狀況
         if doc.css('table').size < 3
           debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
-          html_file.close
+          html_file
           return nil
         else
           break
