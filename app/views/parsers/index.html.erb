@@ -125,3 +125,18 @@
     </ul>
   </div>
 </div>
+<div>
+  <div class='existing-data'>
+    <h3>已抓資料</h3>
+    <ul>
+      <% @stocks.each do |stock| %>
+        <li><%= stock.ticker %></li>
+        <ul>
+          <% stock.statements.order(:year, :quarter).each do |st| %>
+            <li><%= "#{st.year} Q#{st.quarter}" %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </ul>
+  </div>
+</div>
