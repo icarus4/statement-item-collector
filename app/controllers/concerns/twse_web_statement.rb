@@ -602,7 +602,13 @@ class TwseWebStatement
 
     # big5 => utf8
     ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
-    return ic.iconv(html_file)
+    begin
+      iconv_html_file = ic.iconv(html_file)
+    rescue
+      return nil
+    end
+
+    return iconv_html_file
   end
 
   def html_file_storing_path(ticker, year, quarter, statement_type, statement_subtype)
