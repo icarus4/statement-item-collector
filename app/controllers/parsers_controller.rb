@@ -46,6 +46,7 @@ class ParsersController < ApplicationController
     @category = params[:category]
     @sub_category = params[:sub_category]
 
+    @s_type = 'ifrs'
     @item = Item.where(name: table_name, s_type: 'ifrs').first
   end
 
@@ -60,6 +61,7 @@ class ParsersController < ApplicationController
     @category = params[:category]
     @sub_category = params[:sub_category]
 
+    @s_type = 'gaap'
     @item = Item.where(name: table_name, s_type: 'gaap').first
     render :ifrs
   end

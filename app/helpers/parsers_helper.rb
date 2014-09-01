@@ -4,7 +4,8 @@ module ParsersHelper
     color_class = item.has_value ? 'warning' : ''
 
     content_tag :td, class: "item-name #{color_class}" do
-      content_tag(:span, "#{item.name}", style: "margin-left: #{margin}px")
+      concat content_tag(:span, "#{item.name}", style: "margin-left: #{margin}px")
+      concat content_tag(:span, " - #{item.s_type}", style: "color: lightgray")
     end
   end
 
@@ -21,7 +22,7 @@ module ParsersHelper
     content_tag(:span, "共 #{stock_count} 檔", class: 'stock-count toggleable-switch')
   end
 
-  def render_corresponding_statements(item, category=nil, sub_category=nil)
+  def render_corresponding_statements(item, s_type=nil, category=nil, sub_category=nil)
     if category.blank? && sub_category.blank?
       stocks = item.stocks
     elsif category.present? && sub_category.blank?
@@ -30,16 +31,17 @@ module ParsersHelper
       stocks = item.stocks.where(category: category, sub_category: sub_category)
     end
 
-    stocks.find_each do |stock|
-      concat _capture_stock(stock)
+    stocks.order(:ticker).find_each do |stock|
+      concat _capture_stock(stock, s_type)
     end
   end
 
-  def _capture_stock(stock)
+  def _capture_stock(stock, s_type=nil)
+    raise 's_type should not be nil' if s_type.nil?
     capture do
       content_tag(:li) do
-        concat content_tag(:span, "#{stock.ticker} (#{stock.statements.size} 次)", class: 'ticker toggleable-switch')
-        concat _capture_statement(stock.statements.order(:year, :quarter))
+        concat content_tag(:span, "#{stock.ticker} (#{stock.statements.where(s_type: s_type).size} 次)", class: 'ticker toggleable-switch')
+        concat _capture_statement(stock.statements.where(s_type: s_type).order(:year, :quarter))
       end
     end
   end
@@ -47,7 +49,7 @@ module ParsersHelper
   def _capture_statement(statements)
     capture do
       content_tag(:ul, class: 'toggleable', style: 'display: none') do
-        statements.find_each do |st|
+        statements.order(:year, :quarter).find_each do |st|
           concat content_tag(:li, "#{st.year} Q#{st.quarter}")
         end
       end
