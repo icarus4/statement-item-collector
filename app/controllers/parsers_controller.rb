@@ -17,18 +17,22 @@ class ParsersController < ApplicationController
 
   def parse_bank_stocks
     parse_stocks(TwseWebStatement.bank_stocks)
+    render :index
   end
 
   def parse_assurance_stocks
     parse_stocks(TwseWebStatement.assurance_stocks)
+    render :index
   end
 
   def parse_broker_stocks
     parse_stocks(TwseWebStatement.broker_stocks)
+    render :index
   end
 
   def parse_financial_stocks
     parse_stocks(TwseWebStatement.financial_stocks)
+    render :index
   end
 
 
