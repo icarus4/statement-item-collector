@@ -9,30 +9,35 @@ class ParsersController < ApplicationController
   def parse
     ticker  = params[:ticker]
     statement_subtype = params[:s_subtype]
-
     raise 's_subtype should be c or i' if statement_subtype != 'c' && statement_subtype != 'i'
-
     parse_stocks([]<<ticker, @start_year, @start_quarter, @end_year, @end_quarter, statement_subtype)
-
   end
 
   def parse_bank_stocks
-    parse_stocks(TwseWebStatement.bank_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
+    stocks = TwseWebStatement.bank_stocks
+    stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
+    parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_insurance_stocks
-    parse_stocks(TwseWebStatement.insurance_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
+    stocks = TwseWebStatement.bank_stocks
+    stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
+    parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_broker_stocks
-    parse_stocks(TwseWebStatement.broker_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
+    stocks = TwseWebStatement.bank_stocks
+    stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
+    parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
   def parse_financial_stocks
-    parse_stocks(TwseWebStatement.financial_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
+    stocks = TwseWebStatement.bank_stocks
+    stocks.delete_if {|x| x < params[:start_ticker].to_i} if params[:start_ticker].present?
+    parse_stocks(stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 
@@ -71,12 +76,13 @@ class ParsersController < ApplicationController
   private
 
   def get_parse_params
-    @start_year = @start_quarter = @end_year = @end_quarter = @s_subtype = nil
+    @start_year = @start_quarter = @end_year = @end_quarter = @s_subtype = @start_ticker = nil
     @start_year = params[:start_year].to_i if params[:start_year]
     @start_quarter = params[:start_quarter].to_i if params[:start_quarter]
     @end_year = params[:end_year].to_i if params[:end_year]
     @end_quarter = params[:end_quarter].to_i if params[:end_quarter]
     @s_subtype = params[:s_subtype]
+    @start_ticker = params[:start_ticker] if params[:start_ticker].present?
   end
 
   def parse_stocks(stock_array, start_year=nil, start_quarter=nil, end_year=nil, end_quarter=nil, s_subtype=nil)

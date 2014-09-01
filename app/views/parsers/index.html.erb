@@ -27,6 +27,7 @@
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= label_tag(:start_ticker, "從此檔開始: ") %> <%= number_field_tag(:start_ticker, nil, min: 1000, max: 9999) %>
   <%= submit_tag("抓資料") %>
 <% end %>
 </div>
@@ -43,6 +44,7 @@
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= label_tag(:start_ticker, "從此檔開始: ") %> <%= number_field_tag(:start_ticker, nil, min: 1000, max: 9999) %>
   <%= submit_tag("抓資料") %>
 <% end %>
 </div>
@@ -59,6 +61,7 @@
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= label_tag(:start_ticker, "從此檔開始: ") %> <%= number_field_tag(:start_ticker, nil, min: 1000, max: 9999) %>
   <%= submit_tag("抓資料") %>
 <% end %>
 </div>
@@ -75,6 +78,7 @@
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
+  <%= label_tag(:start_ticker, "從此檔開始: ") %> <%= number_field_tag(:start_ticker, nil, min: 1000, max: 9999) %>
   <%= submit_tag("抓資料") %>
 <% end %>
 </div>

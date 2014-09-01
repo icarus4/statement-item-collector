@@ -665,6 +665,7 @@ class TwseWebStatement
     Rails.logger.debug str
   end
 
+  # 編輯此表時，需按照 ticker 數字大小由小到大排序
   TWSE_FINANCE_STOCK_LIST = {
     bank: [
       2801, # 2801 彰銀
