@@ -11,7 +11,7 @@ Rails.application.routes.draw do
   get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
   get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
   post 'parsers/parse_bank_stocks' => 'parsers#parse_bank_stocks'
-  post 'parsers/parse_assurance_stocks' => 'parsers#parse_assurance_stocks'
+  post 'parsers/parse_insurance_stocks' => 'parsers#parse_insurance_stocks'
   post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
   post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
 

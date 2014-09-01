@@ -20,8 +20,8 @@ class ParsersController < ApplicationController
     render :index
   end
 
-  def parse_assurance_stocks
-    parse_stocks(TwseWebStatement.assurance_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
+  def parse_insurance_stocks
+    parse_stocks(TwseWebStatement.insurance_stocks, @start_year, @start_quarter, @end_year, @end_quarter, @s_subtype)
     render :index
   end
 

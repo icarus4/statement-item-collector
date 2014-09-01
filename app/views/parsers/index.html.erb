@@ -34,7 +34,7 @@
 <hr>
 
 <div class="search-area">
-<%= form_tag({controller: 'parsers', action: 'parse_assurance_stocks'}, method: 'post', id: 'search-form') do %>
+<%= form_tag({controller: 'parsers', action: 'parse_insurance_stocks'}, method: 'post', id: 'search-form') do %>
   <span>抓<b>保險類股</b> From: </span>
   <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
@@ -101,13 +101,13 @@
       <li>保險類股
         <ul>
           <li><%= link_to 'IFRS 全部', {controller: 'parsers', action: 'ifrs', table_name: 'root'}, target: '_blank' %></li>
-          <li><%= link_to 'IFRS 資產負債表', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
-          <li><%= link_to 'IFRS 綜合損益表', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
-          <li><%= link_to 'IFRS 現金流量表', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 資產負債表', {controller: 'parsers', action: 'ifrs', table_name: 'bs', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 綜合損益表', {controller: 'parsers', action: 'ifrs', table_name: 'is', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
+          <li><%= link_to 'IFRS 現金流量表', {controller: 'parsers', action: 'ifrs', table_name: 'cf', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
           <li><%= link_to 'GAAP 全部', {controller: 'parsers', action: 'gaap', table_name: 'root'}, target: '_blank' %></li>
-          <li><%= link_to 'GAAP 資產負債表', {controller: 'parsers', action: 'gaap', table_name: 'bs', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
-          <li><%= link_to 'GAAP 綜合損益表', {controller: 'parsers', action: 'gaap', table_name: 'is', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
-          <li><%= link_to 'GAAP 現金流量表', {controller: 'parsers', action: 'gaap', table_name: 'cf', category: 'finance', sub_category: 'assurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 資產負債表', {controller: 'parsers', action: 'gaap', table_name: 'bs', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 綜合損益表', {controller: 'parsers', action: 'gaap', table_name: 'is', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
+          <li><%= link_to 'GAAP 現金流量表', {controller: 'parsers', action: 'gaap', table_name: 'cf', category: 'finance', sub_category: 'insurance'}, target: '_blank' %></li>
         </ul>
       </li>
       <li>證券類股

@@ -101,8 +101,8 @@ class TwseWebStatement
     TWSE_FINANCE_STOCK_LIST[:bank]
   end
 
-  def self.assurance_stocks
-    TWSE_FINANCE_STOCK_LIST[:assurance]
+  def self.insurance_stocks
+    TWSE_FINANCE_STOCK_LIST[:insurance]
   end
 
   def self.broker_stocks
@@ -656,7 +656,7 @@ class TwseWebStatement
   def get_sub_category(ticker)
     ticker = ticker.to_i if ticker.is_a?(String)
     return 'bank' if TWSE_FINANCE_STOCK_LIST[:bank].include?(ticker)
-    return 'assurance' if TWSE_FINANCE_STOCK_LIST[:assurance].include?(ticker)
+    return 'insurance' if TWSE_FINANCE_STOCK_LIST[:insurance].include?(ticker)
     return 'broker' if TWSE_FINANCE_STOCK_LIST[:broker].include?(ticker)
     return 'common'
   end
@@ -695,7 +695,7 @@ class TwseWebStatement
       5880  # 5880 合庫金
     ],
 
-    assurance: [
+    insurance: [
       2816, # 2816 旺旺保
       2823, # 2823 中壽
       2832, # 2832 台產
