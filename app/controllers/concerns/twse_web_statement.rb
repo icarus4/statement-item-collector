@@ -119,36 +119,23 @@ class TwseWebStatement
     # xbrl_file = nil
 
     # get html
-    retry_count = 0
-    loop do
-      if retry_count > 3
+    html_file = get_html_file(@ticker, @year, @quarter, @statement_type, @statement_subtype)
+
+    if html_file.present?
+      begin
+        doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+      rescue
+        debug_log 'error when open file by Nokogiri'
         return nil
       end
 
-      html_file = get_html_file(@ticker, @year, @quarter, @statement_type, @statement_subtype)
-
-      if html_file.present?
-        begin
-          doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
-        rescue
-          debug_log 'error when open file by Nokogiri'
-          html_file
-          return nil
-        end
-
-        # 查無資料或其他無資料的狀況
-        if doc.css('table').size < 3
-          debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
-          html_file
-          return nil
-        else
-          break
-        end
+      # 查無資料或其他無資料的狀況
+      if doc.css('table').size < 3
+        debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
+        return nil
       end
-
-      sleep 3 # 降低被 server 擋 request 的機率
-      retry_count += 1
     end
+
 
     # FIXME: skip xbrl first
     # # get xbrl
@@ -559,21 +546,21 @@ class TwseWebStatement
         SSEASON:    quarter,
         REPORT_ID:  report_id
       }
+
       # get html
-      html_file = RestClient.post(
-        url,
-        form_data
-        # user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-        # {
-        #   Content-Length: '57',
-        #   Content-Type: 'application/x-www-form-urlencoded',
-        #   Cookie: '__utma=193825960.922472084.1403834714.1407900313.1407906729.10; __utmc=193825960; __utmz=193825960.1407906729.10.9.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)',
-        #   Host: 'mops.twse.com.tw',
-        #   Origin: 'http://mops.twse.com.tw',
-        #   User-Agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-        #   Referer: 'http://mops.twse.com.tw/server-java/t164sb01',
-        # }
-      )
+      conn_counter = 0
+      begin
+        html_file = RestClient.post(
+          url,
+          form_data
+        )
+      rescue
+        sleep 10 + conn_counter * 5
+        conn_counter += 1
+        return nil if conn_counter > 10
+        retry
+      end
+
     elsif statement_type == 'gaap'
 
       debug_log "downloading #{ticker} #{year} Q#{quarter} #{statement_subtype} gaap statement..."
@@ -596,9 +583,18 @@ class TwseWebStatement
         # c.request :multipart
       end
 
-      resp = conn.post(urn, form_data)
+      conn_counter = 0
+      begin
+        resp = conn.post(urn, form_data)
+      rescue
+        sleep 10 + conn_counter * 5
+        conn_counter += 1
+        return nil if conn_counter > 10
+        retry
+      else
+        html_file = resp.body
+      end
 
-      html_file = resp.body
     else
       raise 'error statement_type'
     end
