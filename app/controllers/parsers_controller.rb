@@ -3,7 +3,7 @@ class ParsersController < ApplicationController
   before_action :get_parse_params, except: [:ifrs, :gaap, :index]
 
   def index
-    @stocks = Stock.all
+    @stocks = Stock.all.order(:ticker)
     @not_parsed_stocks = Stock.get_not_parsed_stocks
   end
 
