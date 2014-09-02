@@ -4,10 +4,10 @@
   <span>抓個股</span>
   <%= label_tag(:ticker, "TWSE 股號: ") %> <%= number_field_tag(:ticker, nil, min: 1000, max: 9999) %>
   <span> From: </span>
-  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span> To: </span>
-  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
@@ -20,10 +20,10 @@
 <div class="search-area">
 <%= form_tag({controller: 'parsers', action: 'parse_bank_stocks'}, method: 'post', id: 'search-form') do %>
   <span>抓<b>銀行類股</b> From: </span>
-  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span> To: </span>
-  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
@@ -37,10 +37,10 @@
 <div class="search-area">
 <%= form_tag({controller: 'parsers', action: 'parse_insurance_stocks'}, method: 'post', id: 'search-form') do %>
   <span>抓<b>保險類股</b> From: </span>
-  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span> To: </span>
-  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
@@ -54,10 +54,10 @@
 <div class="search-area">
 <%= form_tag({controller: 'parsers', action: 'parse_broker_stocks'}, method: 'post', id: 'search-form') do %>
   <span>抓<b>證券類股</b> From: </span>
-  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span> To: </span>
-  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
@@ -71,10 +71,10 @@
 <div class="search-area">
 <%= form_tag({controller: 'parsers', action: 'parse_financial_stocks'}, method: 'post', id: 'search-form') do %>
   <span>抓<b>所有金融類股</b> From: </span>
-  <%= select_tag(:start_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:start_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:start_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span> To: </span>
-  <%= select_tag(:end_year, options_for_select([ ['2014', 2014], ['2013', 2013], ['2012', 2012], ['2011', 2011], ['2010', 2010], ['2009', 2009], ['2008', 2008] ], 1)) %>
+  <%= select_tag(:end_year, options_for_select(@year_list, @default_year)) %>
   <%= select_tag(:end_quarter, options_for_select([ ['Q1', 1], ['Q2', 2], ['Q3', 3], ['Q4', 4] ], 1)) %>
   <span>類型:</span>
   <%= select_tag(:s_subtype, options_for_select([ ['合併', 'c'], ['非合併', 'i'] ], 'c')) %>
