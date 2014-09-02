@@ -75,3 +75,5 @@ gem 'rest-client', '~> 1.7.2'
 gem 'iconv'
 
 gem 'faraday'
+
+gem 'rails_admin', '~> 0.6.2'
