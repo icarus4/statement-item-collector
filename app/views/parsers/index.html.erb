@@ -86,7 +86,7 @@
 <hr>
 
 <!-- 顯示資料 -->
-<div style=''>
+<div>
   <div class='result-links'>
     <h3>查看分析資料</h3>
     <ul>
@@ -130,17 +130,28 @@
   </div>
 </div>
 <div>
-  <div class='existing-data'>
-    <h3>已抓資料</h3>
-    <ul>
-      <% @stocks.each do |stock| %>
-        <li><%= "#{stock.ticker} (#{stock.sub_category})" %></li>
-        <ul>
-          <% stock.statements.order(:year, :quarter).each do |st| %>
-            <li><%= "#{st.year} Q#{st.quarter}" %></li>
-          <% end %>
-        </ul>
-      <% end %>
-    </ul>
+  <div>
+    <div class='not-parsed-stock'>
+      <h3>未抓過的股票</h3>
+      <ul>
+        <% @not_parsed_stocks.each do |stock| %>
+        <li><%= stock %></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class='existing-data'>
+      <h3>已抓資料</h3>
+      <ul>
+        <% @stocks.each do |stock| %>
+          <li><%= "#{stock.ticker} (#{stock.sub_category})" %></li>
+          <ul>
+            <% stock.statements.order(:year, :quarter).each do |st| %>
+              <li><%= "#{st.year} Q#{st.quarter}" %></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </ul>
+    </div>
   </div>
 </div>

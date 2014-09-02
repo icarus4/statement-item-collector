@@ -30,4 +30,10 @@ class Stock < ActiveRecord::Base
       errors.add(:ticker, "should be a string")
     end
   end
+
+  def self.get_not_parsed_stocks
+    all_stocks = TwseWebStatement.financial_stocks
+    parsed_stocks = Stock.all.map {|s| s.ticker.to_i}
+    all_stocks.delete_if {|x| parsed_stocks.include?(x) }
+  end
 end

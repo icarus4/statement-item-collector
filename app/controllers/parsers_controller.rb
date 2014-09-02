@@ -4,6 +4,7 @@ class ParsersController < ApplicationController
 
   def index
     @stocks = Stock.all
+    @not_parsed_stocks = Stock.get_not_parsed_stocks
   end
 
   def parse
