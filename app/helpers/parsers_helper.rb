@@ -38,11 +38,11 @@ module ParsersHelper
 
   def _capture_stock(stock, item, s_type=nil)
     raise 's_type should not be nil' if s_type.nil?
-    related_statements = Statement.where(stock_id: stock.id).includes(:item_statement_pairs).where(item_statement_pairs: {item_id: item.id})
+    related_statements = Statement.where(stock_id: stock.id).joins(:item_statement_pairs).where(item_statement_pairs: {item_id: item.id}).order(:year, :quarter)
     capture do
       content_tag(:li) do
         concat content_tag(:span, "#{stock.ticker} (#{related_statements.size} 次)", class: 'ticker toggleable-switch')
-        concat _capture_statements(related_statements.order(:year, :quarter))
+        concat _capture_statements(related_statements)
       end
     end
   end
