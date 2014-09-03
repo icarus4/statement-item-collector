@@ -32,21 +32,22 @@ module ParsersHelper
     end
 
     stocks.order(:ticker).find_each do |stock|
-      concat _capture_stock(stock, s_type)
+      concat _capture_stock(stock, item, s_type)
     end
   end
 
-  def _capture_stock(stock, s_type=nil)
+  def _capture_stock(stock, item, s_type=nil)
     raise 's_type should not be nil' if s_type.nil?
+    related_statements = Statement.where(stock_id: stock.id).includes(:item_statement_pairs).where(item_statement_pairs: {item_id: item.id})
     capture do
       content_tag(:li) do
-        concat content_tag(:span, "#{stock.ticker} (#{stock.statements.where(s_type: s_type).size} 次)", class: 'ticker toggleable-switch')
-        concat _capture_statement(stock.statements.where(s_type: s_type).order(:year, :quarter))
+        concat content_tag(:span, "#{stock.ticker} (#{related_statements.size} 次)", class: 'ticker toggleable-switch')
+        concat _capture_statements(related_statements.order(:year, :quarter))
       end
     end
   end
 
-  def _capture_statement(statements)
+  def _capture_statements(statements)
     capture do
       content_tag(:ul, class: 'toggleable', style: 'display: none') do
         statements.order(:year, :quarter).find_each do |st|
