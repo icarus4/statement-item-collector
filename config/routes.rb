@@ -4,11 +4,19 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'parsers#ifrs'
+  root 'parsers#index'
 
-  get 'parsers' => 'parsers#ifrs'
-  get 'parsers/parse/' => 'parsers#parse'
-  get 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
+  # get 'parsers' => 'parsers#ifrs'
+  post 'parsers/parse/' => 'parsers#parse'
+  get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
+  get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
+  post 'parsers/parse_bank_stocks' => 'parsers#parse_bank_stocks'
+  post 'parsers/parse_insurance_stocks' => 'parsers#parse_insurance_stocks'
+  post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
+  post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
+
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
+
   # post 'parsers/search/:search' => 'parsers#search'
 
   # Example of regular route:

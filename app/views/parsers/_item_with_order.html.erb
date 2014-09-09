@@ -1,0 +1,32 @@
+<% if @sub_category.blank? || item.is_sub_category?(@sub_category) %> <!-- FIXME -->
+
+<tr>
+
+  <!-- render td: item name -->
+  <%= render_item(item, 28) %>
+
+  <!-- 共 xx 檔 -->
+  <td class='stock-info'>
+    <%= render_stock_count(item, @category, @sub_category) %>
+
+    <ul class='toggleable' style='display: none'>
+
+      <%= render_corresponding_statements(item, @s_type, @category, @sub_category) %>
+
+    </ul>
+
+  </td>
+</tr>
+
+<% end %>
+
+
+<!-- render first child -->
+<% unless item.leaf? %>
+  <%= render partial: 'parsers/item_with_order', locals: {item: item.children.first_item} %>
+<% end %>
+
+<!-- render next sibling -->
+<% if item.next_item.present? %>
+  <%= render partial: 'parsers/item_with_order', locals: {item: item.next_item} %>
+<% end %>

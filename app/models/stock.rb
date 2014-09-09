@@ -14,6 +14,9 @@
 class Stock < ActiveRecord::Base
   has_many :statements, dependent: :destroy
 
+  has_many :item_stock_pairs, dependent: :destroy, autosave: false
+  has_many :items, through: :item_stock_pairs
+
   # ticker should be a string and unique in a country
   validate  :ticker_should_be_a_string
   validates :ticker, presence: true, uniqueness: {scope: :country, message: 'duplicated ticker in the current country'}
@@ -26,5 +29,11 @@ class Stock < ActiveRecord::Base
     unless ticker.is_a?(String)
       errors.add(:ticker, "should be a string")
     end
+  end
+
+  def self.get_not_parsed_stocks
+    all_stocks = TwseWebStatement.financial_stocks
+    parsed_stocks = Stock.all.map {|s| s.ticker.to_i}
+    all_stocks.delete_if {|x| parsed_stocks.include?(x) }
   end
 end

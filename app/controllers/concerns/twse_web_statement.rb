@@ -8,7 +8,7 @@ class TwseWebStatement
 
   STATEMENT_FOLDER = Rails.root.join('doc')
 
-  def initialize(ticker, year, quarter)
+  def initialize(ticker, year, quarter, statement_subtype='c')
     raise 'invalid year' if year > Time.now.year
     raise 'invalid quarter' if quarter > 4 or quarter < 1
 
@@ -17,48 +17,80 @@ class TwseWebStatement
     @quarter = quarter
     @country = 'tw'
     @statement_type = year >= 2013 ? 'ifrs' : 'gaap'
+    @statement_subtype = statement_subtype
     @category = get_category(ticker)
+    @sub_category = get_sub_category(ticker)
   end
 
   def parse
 
     # FIXME: should refind @result to better indicate whether parsing is success or not
-    @result = true
-
+    @result = nil
     html_file = nil
-    ['combined', 'individual'].each do |statement_subtype|
 
-      html_file = get_html_file(@ticker, @year, @quarter, 'combined')
+    # html_file = nil
+    # ['c', 'i'].each do |statement_subtype|
 
-      begin
-        @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
-        get_tables
-      rescue
-        next if statement_subtype == 'combined'
-        return nil if statement_subtype == 'individual'
-      end
-    end
+    #   html_file = get_html_file(@ticker, @year, @quarter, 'c')
 
-    # unless get_tables
-    #   debug_log 'cannot get table'
-    #   @result = nil
-    #   return nil
+    #   begin
+    #     raise if html_file.nil?
+    #     raise if html_file.size < 20000
+    #     @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+    #     get_tables
+    #   rescue
+    #     next if statement_subtype == 'c'
+    #     return nil if statement_subtype == 'c'
+    #   end
     # end
 
+    # # unless get_tables
+    # #   debug_log 'cannot get table'
+    # #   @result = nil
+    # #   return nil
+    # # end
+
+
+    # # save to local
+    # file_path = html_file_storing_path(@ticker, @year, @quarter)
+    # unless File.exist?(file_path)
+    #   File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    # end
+
+    # download and open web and xbrl statements
+    return nil if (html_file = open_statements).nil?
+
+    # get BS/IS/CF html tables
+    @doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+    if get_tables(@doc, @statement_type).nil?
+      html_file
+      return nil
+    end
 
     # save to local
-    file_path = html_file_storing_path(@ticker, @year, @quarter)
-    File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
-
+    # file_path = html_file_storing_path(@ticker, @year, @quarter, @statement_type, @statement_subtype)
+    # unless File.exist?(file_path)
+    #   File.open(file_path, 'w:UTF-8') {|f| f.write(html_file)}
+    # end
 
     # get or create stock and statement data
-    @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category)
+    @stock = Stock.find_or_create_by!(ticker: @ticker, country: @country, category: @category, sub_category: @sub_category)
     @statement = @stock.statements.find_or_create_by!(year: @year, quarter: @quarter, s_type: @statement_type)
 
     # parse and create statement items
-    parse_tables(@bs_table_nodeset)
-    parse_tables(@is_table_nodeset)
-    parse_tables(@cf_table_nodeset)
+    if @statement_type == 'ifrs'
+      parse_tables(@bs_table_nodeset)
+      parse_tables(@is_table_nodeset)
+      parse_tables(@cf_table_nodeset)
+    elsif @statement_type == 'gaap'
+      parse_tables(@gaap_table_nodeset)
+    else
+      html_file
+      raise "line:#{__LINE__} error statement type: #{@statement_type}"
+    end
+
+    html_file
+    return true
   end
 
   def self.financial_stocks
@@ -69,8 +101,8 @@ class TwseWebStatement
     TWSE_FINANCE_STOCK_LIST[:bank]
   end
 
-  def self.assurance_stocks
-    TWSE_FINANCE_STOCK_LIST[:assurance]
+  def self.insurance_stocks
+    TWSE_FINANCE_STOCK_LIST[:insurance]
   end
 
   def self.broker_stocks
@@ -80,15 +112,63 @@ class TwseWebStatement
 
   private
 
+  def open_statements
+
+    html_file = nil
+    # FIXME: skip xbrl first
+    # xbrl_file = nil
+
+    # get html
+    html_file = get_html_file(@ticker, @year, @quarter, @statement_type, @statement_subtype)
+
+    if html_file.present?
+      begin
+        doc = Nokogiri::HTML(html_file, nil, 'UTF-8')
+      rescue
+        @result = 'error when open file by Nokogiri'
+        debug_log 'error when open file by Nokogiri'
+        return nil
+      end
+
+      # 查無資料或其他無資料的狀況
+      if doc.css('table').size < 3
+        @result = '查無資料或其他無資料的狀況'
+        debug_log "查無資料或其他無資料的狀況 file:#{File.basename(__FILE__)} line:#{__LINE__}"
+        return nil
+      end
+    end
+
+
+    # FIXME: skip xbrl first
+    # # get xbrl
+    # retry_count = 0
+    # loop do
+    #   if retry_count > 3
+    #     return nil
+    #   end
+    #   xbrl_file = get_xbrl_file
+    #   break if xbrl_file.present? && xbrl_file.size > 20000
+    #   sleep 3
+    #   retry_count += 1
+    # end
+
+    return html_file
+    # FIXME: skip xbrl first
+    # @xbrl_file = xbrl_file
+
+  end
+
   def parse_tables(table_nodeset)
     tr_array = []
     table_nodeset.css('tr').each do |tr|
       tr_array << tr
     end
-    _parse_each_table_item(tr_array, 0, 0, nil)
+    _parse_each_table_item(tr_array, 0, 0, [], nil)
   end
 
-  def _parse_each_table_item(tr_array, curr_index, previous_level, item_stack)
+  # last_item_array is an array contains previous items of each level
+  # ex: last_item_array[1] is the previous item of the current level 1 item.
+  def _parse_each_table_item(tr_array, curr_index, previous_level, last_item_array, item_stack)
 
     # init item_stack
     item_stack = Stack.new if item_stack.nil?
@@ -104,22 +184,176 @@ class TwseWebStatement
     level = _get_tr_item_level(tr, name)
     has_value, value = _get_tr_item_value(tr)
 
+    # get last_item of current level
+    last_item = last_item_array[level]
+
     if level == 0 # root
 
-      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value, s_type: @statement_type)
+      item = Item.find_or_create_by!(name: 'root', level: level, has_value: has_value, s_type: @statement_type, previous_id: nil, next_id: nil)
 
     elsif level == previous_level + 1 # current is a child of previous item
 
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
+
+      # NO identical item exists
+      unless item = parent_item.children.where(name: name, level: level, has_value: has_value, s_type: @statement_type).first
+        previous_id = nil
+        next_id = nil
+
+        # if brother exists (brother is an item which is identical to the current item, EXCEPT has_value is opposite)
+        if brother = parent_item.children.where(name: name, level: level, has_value: !has_value, s_type: @statement_type).first
+          if has_value # if the current item has value, it should be positioned above its brother
+            # position above its brother
+            previous_id = brother.previous_id
+            next_id = brother.id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            previous_item_of_brother = brother.previous_item
+            if previous_item_of_brother.present?
+              # before insert current item:
+              #   previous item of brother
+              #   brother
+              # after:
+              #   previous item of brother
+              #   current item              <== insert here
+              #   brother
+              previous_item_of_brother.next_id = item.id
+              previous_item_of_brother.save!
+            end
+
+            brother.previous_id = item.id
+            brother.save!
+          else # if current item doesn't has value, it should be positioned under its brother
+            # position under its brother
+            previous_id = brother.id
+            next_id = brother.next_id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            next_item_of_brother = brother.next_item
+            if next_item_of_brother.present?
+              # before insert current item:
+              #   brother
+              #   next item of brother
+              # after:
+              #   brother
+              #   current item          <== insert here
+              #   next item of brother
+              next_item_of_brother.previous_id = item.id
+              next_item_of_brother.save!
+            end
+
+            brother.next_id = item.id
+            brother.save!
+          end
+
+        # if brother doesn't exist but there is any sibling exists, it should be positioned above the first sibling
+        elsif first_sibling = parent_item.children.where(previous_id: nil).first
+          next_id = first_sibling.id
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+          first_sibling.previous_id = item.id
+          first_sibling.save!
+
+        # there is NO any sibling exists
+        else
+          raise 'should not has any sibling' if parent_item.children.any? # should not has any sibling here
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+        end # if brother = ...
+      end # unless item = ...
 
     elsif level <= previous_level
 
       pop_count = previous_level - level + 1
       item_stack.pop(pop_count)
       parent_item = item_stack.top
-      item = parent_item.children.find_or_create_by!(name: name, level: level, has_value: has_value, s_type: @statement_type)
 
+      # if NO identical item exists
+      unless item = parent_item.children.where(name: name, level: level, has_value: has_value, s_type: @statement_type).first
+        # if brother exists
+        if brother = parent_item.children.where(name: name, level: level, has_value: !has_value, s_type: @statement_type).first
+          if has_value # if the current item has value, it should be positioned above its brother
+            # position above its brother
+            previous_id = brother.previous_id
+            next_id = brother.id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            previous_item_of_brother = brother.previous_item
+            if previous_item_of_brother.present?
+              # before insert current item:
+              #   previous item of brother
+              #   brother
+              # after:
+              #   previous item of brother
+              #   current item              <== insert here
+              #   brother
+              previous_item_of_brother.next_id = item.id
+              previous_item_of_brother.save!
+            end
+
+            brother.previous_id = item.id
+            brother.save!
+          else # if current item doesn't has value, it should be positioned under its brother
+            # position under its brother
+            previous_id = brother.id
+            next_id = brother.next_id
+            item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+            next_item_of_brother = brother.next_item
+            if next_item_of_brother.present?
+              # before insert current item:
+              #   brother
+              #   next item of brother
+              # after:
+              #   brother
+              #   current item          <== insert here
+              #   next item of brother
+              next_item_of_brother.previous_id = item.id
+              next_item_of_brother.save!
+            end
+
+            brother.next_id = item.id
+            brother.save!
+          end # else
+
+        # brother doesn't exist, so position under its previous item or under brother of its previous item
+        else
+          raise 'previous item should not be nil' if last_item.nil?
+
+          # Set previous item to the brother of previous item if this previous item has value and has a brother
+          # otherwise we will get things like as follows:
+          #
+          # 現金及約當現金 共 15 檔               <== 這兩檔互為 brother，應該擺在一起
+          # 存放央行及拆借金融同業 共 15 檔
+          # 現金及約當現金 共 11 檔               <== 這兩檔互為 brother，應該擺在一起
+          #   庫存現金  共 5 檔
+          #   零用及週轉金
+          if last_item.has_value? && last_item.brother.present?
+            last_item = last_item.brother
+          end
+
+          previous_id = last_item.id
+          next_id = last_item.next_id
+          item = parent_item.children.create!(name: name, level: level, has_value: has_value, s_type: @statement_type, previous_id: previous_id, next_id: next_id)
+
+          next_item_of_last_item = last_item.next_item
+          if next_item_of_last_item.present?
+            # before insert current item:
+            #   previous item
+            #   next item of previous item
+            # after:
+            #   previous item
+            #   current item          <== insert here
+            #   next item of previous item
+            next_item_of_last_item.previous_id = item.id
+            next_item_of_last_item.save!
+          end
+
+          last_item.next_id = item.id
+          last_item.save!
+        end # if brother = ....
+      end # unless item = ...
+
+    else
+      raise 'level error'
     end
 
     # Associate Statement and Item
@@ -128,8 +362,15 @@ class TwseWebStatement
     rescue
     end
 
+    # Associate Stock and Item
+    begin
+      item.stocks << @stock
+    rescue
+    end
+
+    last_item_array[level] = item
     item_stack.push(item)
-    _parse_each_table_item(tr_array, curr_index+1, level, item_stack)
+    _parse_each_table_item(tr_array, curr_index+1, level, last_item_array, item_stack)
 
     return
   end
@@ -145,8 +386,14 @@ class TwseWebStatement
     # level 0: 會計項目
     # level 1: 資產負債表 / 損益表 / 現金流量表
     level = 1 + _get_tr_item_fullwidth_whitespace_count(tr)
-    level = 0 if name == '會計項目'
-    raise "Failed to get level. (level = #{level}, name = #{name})" if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表')
+    level = 0 if name == '會計項目' || name == '會計科目'
+    if level == 1 and (name != '資產負債表' and name != '綜合損益表' and name != '現金流量表' and name != '損益表')
+      # This is a special case in TWSE: 2845 2010Q3
+      # 其 cashflow 之 "其他補充揭露資訊" 及子項前的空白皆為半型，且一個 indent level 有 4 個空白
+      halfwidth_whitespaces = _get_tr_item_halfwidth_whitespace_count(tr)
+      raise "Failed to get level. (level = #{level}, name = #{name})" if (halfwidth_whitespaces % 4) != 0
+      level = 1 + (halfwidth_whitespaces / 4)
+    end
     return level
   end
 
@@ -162,7 +409,7 @@ class TwseWebStatement
 
     # Return false if not an integer
     value = text.gsub(/,/, '') # remove ',' for number with format: 123,456,789
-    return false, nil if value != value.to_i.to_s
+    return false, nil unless value.is_number?
 
     return true, value
   end
@@ -174,25 +421,52 @@ class TwseWebStatement
     return whitespace_count
   end
 
-  def get_tables
+  def _get_tr_item_halfwidth_whitespace_count(tr)
+    raise 'invalid input (should be Nokogiri nodeset)' unless tr.is_a?(Nokogiri::XML::Element)
+    whitespace_count = tr.children[0].content[/\A[[:space:]]*/].size # 計算半形形空白數量，包含 &npsb
+    raise 'whitespace_count should be equal to or larger than 0' if whitespace_count < 0
+    return whitespace_count
+  end
 
-    # check whether data is existed or not
-    if @doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
-      debug_log "查無資料，full html content:\n#{@doc}"
-      raise '查無資料'
+  def get_tables(doc, statement_type)
+
+    if statement_type == 'ifrs'
+
+      # check whether data is existed or not
+      if doc.css('html > body > center > h4 > font').first.try(:content) == '查無資料'
+        # debug_log "查無資料，full html content:\n#{doc}"
+        @result = '查無資料'
+        debug_log "line:#{__LINE__} 查無資料"
+        return nil
+      end
+
+      # get 資產負債表 / 損益表 / 現金流量表
+      @bs_table_nodeset = doc.css('html body center table')[1]
+      @is_table_nodeset = doc.css('html body center table')[2]
+      @cf_table_nodeset = doc.css('html body center table')[3]
+      raise 'Failed to get balance sheet tables' unless @bs_table_nodeset.is_a?(Nokogiri::XML::Element)
+      raise 'Failed to get income statement tables' unless @is_table_nodeset.is_a?(Nokogiri::XML::Element)
+      raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
+
+    elsif statement_type == 'gaap'
+
+      # check whether data is existed or not
+      if doc.css('table').size < 3
+        # debug_log "查無資料，full html content:\n#{doc}"
+        @result = '查無資料'
+        debug_log "line:#{__LINE__} 查無資料"
+        debug_log doc
+        return nil
+      end
+
+      # @bs_table_nodeset, @is_table_nodeset, @cf_table_nodeset = get_gaap_tables(doc)
+      @gaap_table_nodeset = doc.css('html body div table')[1]
+
+    else
+      raise 'wrong statement_type'
     end
 
-    @html = @doc.at_css('html html')
-
-    # get 資產負債表 / 損益表 / 現金流量表
-    @bs_table_nodeset = @doc.css('html body center table')[1]
-    @is_table_nodeset = @doc.css('html body center table')[2]
-    @cf_table_nodeset = @doc.css('html body center table')[3]
-    raise 'Failed to get balance sheet tables' unless @bs_table_nodeset.is_a?(Nokogiri::XML::Element)
-    raise 'Failed to get income statement tables' unless @is_table_nodeset.is_a?(Nokogiri::XML::Element)
-    raise 'Failed to get cash flow tables' unless @cf_table_nodeset.is_a?(Nokogiri::XML::Element)
-
-    # todo: check content is valid or not
+    # TODO: check content is valid or not
 
     @bs_content = @bs_table_nodeset.try(:content)
     @is_content = @is_table_nodeset.try(:content)
@@ -201,52 +475,184 @@ class TwseWebStatement
     return true
   end
 
-  def get_html_file(ticker, year, quarter, statement_subtype)
+  def get_gaap_tables(doc)
 
-    file_path = html_file_storing_path(ticker, year, quarter)
+    trs = doc.css('html body div table')[1].css('tr')
+
+    state = nil
+    bs_tr_array = []; is_tr_array = []; cf_tr_array = []
+
+    trs.each do |tr|
+      begin
+        state = 'bs' if tr.css('th').first.content == '資產負債表'
+        state = 'is' if tr.css('th').first.content == '損益表'
+        state = 'cf' if tr.css('th').first.content == '現金流量表'
+      rescue
+      end
+
+      case state
+        when 'bs'; bs_tr_array << tr
+        when 'is'; is_tr_array << tr
+        when 'cf'; cf_tr_array << tr
+      end
+    end
+
+    bs_table_nodeset = Nokogiri::XML('<table></table>').root
+    is_table_nodeset = Nokogiri::XML('<table></table>').root
+    cf_table_nodeset = Nokogiri::XML('<table></table>').root
+
+    bs_table_nodeset = fill_up_table(bs_table_nodeset, bs_tr_array)
+    is_table_nodeset = fill_up_table(is_table_nodeset, is_tr_array)
+    cf_table_nodeset = fill_up_table(cf_table_nodeset, cf_tr_array)
+
+    return bs_table_nodeset, is_table_nodeset, cf_table_nodeset
+    # ap is_table_nodeset.children[3]; exit
+
+  end
+
+  def fill_up_table(table_nodeset, tr_array)
+    raise 'invalid table_nodeset' unless table_nodeset.is_a?(Nokogiri::XML::Element)
+    raise 'array should not be empty' if tr_array.empty?
+
+    tr_array.each do |tr|
+      if table_nodeset.last_element_child.nil?
+        table_nodeset.children = tr
+      else
+        table_nodeset.last_element_child.after(tr)
+      end
+    end
+
+    return table_nodeset
+  end
+
+  def get_html_file(ticker, year, quarter, statement_type, statement_subtype)
+
+    file_path = html_file_storing_path(ticker, year, quarter, statement_type, statement_subtype)
 
     # get html file if already existed, otherwise get from TWSE
     if File.exist?(file_path)
       debug_log "opening #{ticker} (#{year}Q#{quarter}) local html file #{file_path}"
-      html_file = open_local_html_file(file_path)
+      html_file = open_local_file(file_path)
       @data_source = file_path
     else
       debug_log "getting #{ticker} (#{year}Q#{quarter}) html from TWSE"
-      html_file = get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
+      html_file = get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_type, statement_subtype)
       @data_source = 'TWSE'
     end
 
     return html_file
   end
 
-  def get_twse_ifrs_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_subtype)
+  def get_xbrl_file
+    # TODO:...
 
-    report_id = statement_subtype == 'combined' ? 'C' : 'A'
+    xbrl_file = open_local_file('xbrl/tifrs-fr1-m1-ci-cr-2330-2014Q1.xml')
+  end
 
-    url = 'http://mops.twse.com.tw/server-java/t164sb01'
+  def get_twse_html_statement_and_convert_to_utf8(ticker, year, quarter, statement_type, statement_subtype)
 
-    form_data = {
-      step:       '1',
-      DEBUG:      '',
-      CO_ID:      ticker,
-      SYEAR:      year,
-      SSEASON:    quarter,
-      REPORT_ID:  report_id
-    }
+    debug_log "downloading #{ticker} #{year} Q#{quarter} #{statement_type} #{statement_subtype} statement..."
 
-    # get html
-    html_file = RestClient.post(url, form_data)
+    if statement_type == 'ifrs'
+
+      report_id = statement_subtype == 'c' ? 'C' : 'A'
+      url = 'http://mops.twse.com.tw/server-java/t164sb01'
+
+      form_data = {
+        step:       '1',
+        DEBUG:      '',
+        CO_ID:      ticker,
+        SYEAR:      year,
+        SSEASON:    quarter,
+        REPORT_ID:  report_id
+      }
+
+      # get html
+      conn_counter = 0
+      begin
+        html_file = RestClient.post(
+          url,
+          form_data
+        )
+      rescue
+        sleep 10 + conn_counter * 5
+        conn_counter += 1
+        if conn_counter > 10
+          @result = 'cannot connect to TWSE server'
+          return nil
+        end
+        retry
+      end
+
+    elsif statement_type == 'gaap'
+
+      report_id = statement_subtype == 'c' ? 'B' : 'A'
+      url = 'http://mops.twse.com.tw'
+      urn = '/server-java/t147sb02'
+      form_data = {
+        step:    '0',
+        comp_id: ticker,
+        R_TYPE1: report_id,
+        YEAR1:   year.to_s,
+        SEASON1: quarter.to_s
+      }
+
+      conn = Faraday.new(url: url) do |c|
+        c.use Faraday::Request::UrlEncoded
+        c.use Faraday::Response::Logger
+        c.use Faraday::Adapter::NetHttp
+        # c.request :multipart
+      end
+
+      conn_counter = 0
+      begin
+        resp = conn.post(urn, form_data)
+      rescue
+        sleep 10 + conn_counter * 5
+        conn_counter += 1
+        if conn_counter > 10
+          @result = 'cannot connect to TWSE server'
+          return nil
+        end
+
+        retry
+      else
+        html_file = resp.body
+      end
+
+    else
+      raise 'error statement_type'
+    end
+
 
     # big5 => utf8
     ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
-    return ic.iconv(html_file)
+    begin
+      iconv_html_file = ic.iconv(html_file)
+    rescue
+      @result = 'iconv fail'
+      return nil
+    end
+
+    return iconv_html_file
   end
 
-  def html_file_storing_path(ticker, year, quarter)
-    "#{STATEMENT_FOLDER}/#{ticker}-#{year}-Q#{quarter}.html"
+  def html_file_storing_path(ticker, year, quarter, statement_type, statement_subtype)
+    if statement_type == 'ifrs'
+      return "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}.html"
+    end
+
+    if statement_type == 'gaap'
+      sub_type_name = statement_subtype == 'c' ? 'c' : 'i'
+      return "#{STATEMENT_FOLDER}/html/#{ticker}-#{year}-Q#{quarter}-#{sub_type_name}.html"
+    end
   end
 
-  def open_local_html_file(name)
+  def xbrl_file_storing_path(ticker, year, quarter)
+    "#{STATEMENT_FOLDER}/xbrl/#{ticker}-#{year}-Q#{quarter}.html"
+  end
+
+  def open_local_file(name)
     return File.open(Rails.root.join('doc', name), 'r:UTF-8')
     # ic = Iconv.new("utf-8//TRANSLIT//IGNORE", "big5")
     # return ic.iconv(html_file.read)
@@ -260,10 +666,19 @@ class TwseWebStatement
     end
   end
 
+  def get_sub_category(ticker)
+    ticker = ticker.to_i if ticker.is_a?(String)
+    return 'bank' if TWSE_FINANCE_STOCK_LIST[:bank].include?(ticker)
+    return 'insurance' if TWSE_FINANCE_STOCK_LIST[:insurance].include?(ticker)
+    return 'broker' if TWSE_FINANCE_STOCK_LIST[:broker].include?(ticker)
+    return 'common'
+  end
+
   def debug_log(str)
     Rails.logger.debug str
   end
 
+  # 編輯此表時，需按照 ticker 數字大小由小到大排序
   TWSE_FINANCE_STOCK_LIST = {
     bank: [
       2801, # 2801 彰銀
@@ -294,7 +709,7 @@ class TwseWebStatement
       5880  # 5880 合庫金
     ],
 
-    assurance: [
+    insurance: [
       2816, # 2816 旺旺保
       2823, # 2823 中壽
       2832, # 2832 台產
@@ -321,6 +736,11 @@ class TwseWebStatement
 
   # @@TWSE_FINANCE_STOCK_LIST = TWSE_FINANCE_STOCK_LIST
 
-
 end
 
+
+class String
+  def is_number?
+    true if Float(self) rescue false
+  end
+end

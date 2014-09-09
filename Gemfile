@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+ruby '2.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 4.1.4'
@@ -54,9 +55,12 @@ group :development, :test do
   gem 'guard-rspec', '~> 4.2.10'
   gem 'guard-livereload'
   gem 'spring-commands-rspec', '~> 1.0.2'
-  gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
+  # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
 
+group :production do
+  gem 'pg', '~> 0.17.1'
+end
 
 gem 'bootstrap-sass', '~> 3.2.0'
 
@@ -66,6 +70,10 @@ gem 'hirb-unicode'
 
 gem 'awesome_print'
 
-gem 'rest-client'
+gem 'rest-client', '~> 1.7.2'
 
 gem 'iconv'
+
+gem 'faraday'
+
+gem 'rails_admin', '~> 0.6.2'
