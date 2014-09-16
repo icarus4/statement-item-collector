@@ -358,13 +358,13 @@ class TwseWebStatement
 
     # Associate Statement and Item
     begin
-      item.statements << @statement
+      item.statements << @statement unless item.statements.include?(@statement)
     rescue
     end
 
     # Associate Stock and Item
     begin
-      item.stocks << @stock
+      item.stocks << @stock unless item.stocks.include?(@stock)
     rescue
     end
 
