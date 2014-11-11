@@ -72,17 +72,12 @@ group :production do
 end
 
 gem 'bootstrap-sass', '~> 3.2.0'
-
 gem 'closure_tree'
-
 gem 'hirb-unicode'
-
 gem 'awesome_print'
-
 gem 'rest-client', '~> 1.7.2'
-
 gem 'iconv'
-
 gem 'faraday'
-
 gem 'rails_admin', '~> 0.6.2'
+gem 'sec_statement_parser', github: 'icarus4/sec_statement_parser', branch: 'master'
+gem 'colorize'

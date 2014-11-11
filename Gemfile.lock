@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/icarus4/sec_statement_parser.git
+  revision: fb4ac21b549352c926391c79604499af58feeff5
+  branch: master
+  specs:
+    sec_statement_parser (0.2.4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -60,6 +67,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.1)
+    colorize (0.7.3)
     debug_inspector (0.0.2)
     diff-lcs (1.2.5)
     em-websocket (0.5.1)
@@ -264,6 +272,7 @@ DEPENDENCIES
   capybara
   closure_tree
   coffee-rails (~> 4.0.0)
+  colorize
   factory_girl_rails
   faker
   faraday
@@ -283,6 +292,7 @@ DEPENDENCIES
   rspec-rails (~> 3.0.0)
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)
+  sec_statement_parser!
   simple_form
   spring
   spring-commands-rspec (~> 1.0.2)
