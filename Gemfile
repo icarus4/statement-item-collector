@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
+ruby '2.1.4'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.1.4'
+gem 'rails', '~> 4.1.7'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -52,10 +52,17 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
+  gem 'factory_girl_rails'
   gem 'guard-rspec', '~> 4.2.10'
   gem 'guard-livereload'
   gem 'spring-commands-rspec', '~> 1.0.2'
   # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
+end
+
+group :test do
+  gem 'faker'
+  gem 'capybara'
+  gem 'launchy'
 end
 
 group :production do
