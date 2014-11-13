@@ -50,6 +50,7 @@ group :development do
   gem "annotate"
   # gem 'meta_request'
   gem 'rack-mini-profiler'
+  gem 'railroady'
 end
 
 group :development, :test do
