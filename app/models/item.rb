@@ -25,6 +25,7 @@ class Item < ActiveRecord::Base
   has_many :item_stock_pairs, dependent: :destroy, autosave: false
   has_many :stocks, through: :item_stock_pairs
 
+  has_many :standard_items, through: :item_standard_item_pairs
 
   validates :name, presence: true
   validate  :name_should_be_unique_within_siblings

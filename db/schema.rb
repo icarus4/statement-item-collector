@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140828042604) do
+ActiveRecord::Schema.define(version: 20141115152524) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -57,6 +57,16 @@ ActiveRecord::Schema.define(version: 20140828042604) do
   add_index "items", ["parent_id"], name: "index_items_on_parent_id"
   add_index "items", ["previous_id"], name: "index_items_on_previous_id"
   add_index "items", ["s_type"], name: "index_items_on_s_type"
+
+  create_table "standard_items", force: true do |t|
+    t.string   "name"
+    t.string   "chinese_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "standard_items", ["chinese_name"], name: "index_standard_items_on_chinese_name"
+  add_index "standard_items", ["name"], name: "index_standard_items_on_name"
 
   create_table "statements", force: true do |t|
     t.integer  "stock_id",   null: false
