@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
 
   get 'us' => 'us_stocks#index'
+  get 'us/parse' => 'us_stocks#parse'
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
