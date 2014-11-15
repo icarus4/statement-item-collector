@@ -2,10 +2,10 @@ require 'open-uri'
 
 class GoogleFinanceParser
 
-  attr_reader :doc,
+  attr_reader :ticker, :doc,
               :annual_is_tb, :annual_bs_tb, :annual_cf_tb,
               :is_unit, :bs_unit, :cf_unit,
-              :is_data, :bs_data, :cf_data
+              :data, :is_data, :bs_data, :cf_data
 
   BASE_URL = "https://www.google.com/finance?fstype=ii&q="
 
@@ -13,7 +13,7 @@ class GoogleFinanceParser
     @ticker = ticker.upcase
   end
 
-  def fetch
+  def parse
     query_url = BASE_URL + @ticker
     @doc = Nokogiri::HTML(open(query_url))
     @annual_is_tb, @annual_bs_tb, @annual_cf_tb = get_data_tables(@doc)
@@ -22,6 +22,10 @@ class GoogleFinanceParser
     @is_data = parse_table(@annual_is_tb)
     @bs_data = parse_table(@annual_bs_tb)
     @cf_data = parse_table(@annual_cf_tb)
+
+    # merge @is_data, @bs_data, @cf_data to @data
+    @data = @is_data.merge(@bs_data) {|k,a,b| a.merge b }
+    @data.merge!(@cf_data) {|k,a,b| a.merge b}
 
     # return @annual_is_tb, @annual_bs_tb, @annual_cf_tb
     return self
