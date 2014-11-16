@@ -12,6 +12,10 @@ class UsStocksController < ApplicationController
     # Get file list array under statement_root_dir
     @statements_paths = Dir.glob("#{statement_root_dir}/**/*").reject { |f| File.directory?(f) }
 
+    @stocks_parse_count = 0
+    @statements_parse_count = 0
+    @items_parse_count = 0
+
     gfp = nil # GoogleFinanceParse instance
     @statements_paths.each do |path|
       # path is something like: '/Users/icarus4/.sec_statement_parser/statements/FB/10-K/fb-20131231.xml'
@@ -20,6 +24,10 @@ class UsStocksController < ApplicationController
       end_date = Date.parse(date_str)
       year = date_str.slice(0,4).to_i
 
+      # skip parsed stocks
+      # here we consider a stock has 3 or over 3 statements is parsed
+      next if Stock.where(ticker: ticker).first && Stock.where(ticker: ticker).first.statements.size >= 3
+
       raise "invalid date_str #{date_str}" if date_str.size != 8 # this should not happen
       raise 'invalid year' if year < 2009 || year > Time.now.year # this should not happen
 
@@ -27,6 +35,7 @@ class UsStocksController < ApplicationController
         begin
           gfp = GoogleFinanceParser.new ticker
           gfp.parse
+          @stocks_parse_count += 1
         rescue
           # TODO: save error in DB
           next # continue with next statement
@@ -37,12 +46,15 @@ class UsStocksController < ApplicationController
       file = File.open(path)
       doc = Nokogiri::XML(file)
 
-      # continue with next statement if NOT has that date string in gfp.data
-      next unless gfp.data.has_key?(date_str)
+      # continue with next statement if data is nil or there is NO such date string in gfp.data
+      next if gfp.data.nil?
+      next if ! gfp.data.has_key?(date_str)
 
       # Create record in DB
       @stock = Stock.find_or_create_by!(ticker: ticker, country: 'us')
       @statement = Statement.find_or_create_by!(stock_id: @stock.id, year: year, end_date: end_date, s_type: 'gaap')
+
+      @statements_parse_count += 1
 
       gfp.data[date_str].each do |item_name,value|
         next if value.nil? # skip items with nil value
@@ -58,6 +70,8 @@ class UsStocksController < ApplicationController
             ItemStandardItemPair.find_or_create_by(item_id: item.id, standard_item_id: si.id, is_exactly_matched: is_exactly_matched)
             @stock.items << item unless @stock.items.include?(item)
             @statement.items << item unless @statement.items.include?(item)
+
+            @items_parse_count += 1
           end
         end
       end
