@@ -2,14 +2,15 @@
 #
 # Table name: statements
 #
-#  id         :integer          not null, primary key
-#  stock_id   :integer          not null
-#  year       :integer          not null
-#  quarter    :integer
-#  created_at :datetime
-#  updated_at :datetime
-#  s_type     :string(255)
-#  end_date   :date
+#  id          :integer          not null, primary key
+#  stock_id    :integer          not null
+#  year        :integer          not null
+#  quarter     :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#  s_type      :string(255)
+#  end_date    :date
+#  items_count :integer          default(0)
 #
 
 require 'spec_helper'

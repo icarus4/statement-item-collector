@@ -9,6 +9,7 @@
 #  country      :string(255)      default("tw"), not null
 #  category     :string(255)
 #  sub_category :string(255)
+#  items_count  :integer          default(0)
 #
 
 class Stock < ActiveRecord::Base

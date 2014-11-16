@@ -2,17 +2,19 @@
 #
 # Table name: items
 #
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  level       :integer
-#  created_at  :datetime
-#  updated_at  :datetime
-#  parent_id   :integer
-#  has_value   :boolean
-#  previous_id :integer
-#  next_id     :integer
-#  s_type      :string(255)
-#  namespace   :string(255)
+#  id               :integer          not null, primary key
+#  name             :string(255)      not null
+#  level            :integer
+#  created_at       :datetime
+#  updated_at       :datetime
+#  parent_id        :integer
+#  has_value        :boolean
+#  previous_id      :integer
+#  next_id          :integer
+#  s_type           :string(255)
+#  namespace        :string(255)
+#  stocks_count     :integer          default(0)
+#  statements_count :integer          default(0)
 #
 
 class Item < ActiveRecord::Base
