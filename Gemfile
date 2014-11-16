@@ -70,7 +70,7 @@ group :test do
 end
 
 group :production do
-  gem 'pg', '~> 0.17.1'
+  # gem 'pg', '~> 0.17.1'
 end
 
 gem 'bootstrap-sass', '~> 3.2.0'
@@ -83,3 +83,4 @@ gem 'faraday'
 gem 'rails_admin', '~> 0.6.2'
 gem 'sec_statement_parser', github: 'icarus4/sec_statement_parser', branch: 'master'
 gem 'colorize'
+gem 'puma'

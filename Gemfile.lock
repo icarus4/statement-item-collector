@@ -153,7 +153,6 @@ GEM
       tzinfo
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
-    pg (0.17.1)
     pry (0.10.0)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -161,6 +160,8 @@ GEM
     pry-byebug (2.0.0)
       byebug (~> 3.4)
       pry (~> 0.10)
+    puma (2.9.2)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-mini-profiler (0.9.2)
       rack (>= 1.1.3)
@@ -299,8 +300,8 @@ DEPENDENCIES
   launchy
   nikkou
   nokogiri
-  pg (~> 0.17.1)
   pry-byebug
+  puma
   rack-mini-profiler
   railroady
   rails (~> 4.1.7)
