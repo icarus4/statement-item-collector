@@ -29,8 +29,9 @@ class Item < ActiveRecord::Base
   has_many :item_standard_item_pairs
   has_many :standard_items, through: :item_standard_item_pairs
 
-  validates :name, presence: true
-  validate  :name_should_be_unique_within_siblings
+  validates :name, presence: true, uniqueness: { scope: :namespace }
+  validates :namespace, presence: true, uniqueness: { scope: :name }
+  # validate  :name_should_be_unique_within_siblings
   validates :has_value, inclusion: {in: [true, false]}, allow_nil: true
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
 
