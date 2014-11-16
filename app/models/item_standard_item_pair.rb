@@ -12,6 +12,6 @@ class ItemStandardItemPair < ActiveRecord::Base
   belongs_to :standard_item
   belongs_to :item
 
-  validates :standard_item_id, presence: true, uniqueness: { scope: :item_id }
-  validates :item_id, presence: true, uniqueness: { scope: :standard_item_id }
+  validates :standard_item_id, presence: true, uniqueness: { scope: [:item_id, :exact_match] }
+  validates :item_id, presence: true, uniqueness: { scope: [:standard_item_id, :exact_match] }
 end

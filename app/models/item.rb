@@ -12,6 +12,7 @@
 #  previous_id :integer
 #  next_id     :integer
 #  s_type      :string(255)
+#  namespace   :string(255)
 #
 
 class Item < ActiveRecord::Base
@@ -30,7 +31,7 @@ class Item < ActiveRecord::Base
 
   validates :name, presence: true
   validate  :name_should_be_unique_within_siblings
-  validates :has_value, inclusion: {in: [true, false]}
+  validates :has_value, inclusion: {in: [true, false]}, allow_nil: true
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
 
   scope :first_item, -> {where(previous_id: nil).first}

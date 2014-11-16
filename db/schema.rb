@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141116041622) do
+ActiveRecord::Schema.define(version: 20141116064234) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 20141116041622) do
     t.integer  "previous_id"
     t.integer  "next_id"
     t.string   "s_type"
+    t.string   "namespace"
   end
 
   add_index "items", ["has_value"], name: "index_items_on_has_value"
