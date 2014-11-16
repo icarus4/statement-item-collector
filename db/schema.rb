@@ -23,12 +23,12 @@ ActiveRecord::Schema.define(version: 20141116064234) do
   add_index "item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
 
   create_table "item_standard_item_pairs", force: true do |t|
-    t.integer "standard_item_id", null: false
-    t.integer "item_id",          null: false
-    t.boolean "exact_match"
+    t.integer "standard_item_id",   null: false
+    t.integer "item_id",            null: false
+    t.boolean "is_exactly_matched"
   end
 
-  add_index "item_standard_item_pairs", ["standard_item_id", "item_id", "exact_match"], name: "index_item_standard_item_pairs"
+  add_index "item_standard_item_pairs", ["standard_item_id", "item_id", "is_exactly_matched"], name: "index_item_standard_item_pairs"
 
   create_table "item_statement_pairs", force: true do |t|
     t.integer "item_id",      null: false
