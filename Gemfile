@@ -49,7 +49,7 @@ group :development do
   gem "binding_of_caller"
   gem "annotate"
   # gem 'meta_request'
-  gem 'rack-mini-profiler'
+  # gem 'rack-mini-profiler'
   gem 'railroady'
   gem 'pry-byebug'
 end
