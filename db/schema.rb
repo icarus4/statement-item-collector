@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20141116064234) do
     t.boolean "exact_match"
   end
 
-  add_index "item_standard_item_pairs", ["standard_item_id", "item_id"], name: "index_item_standard_item_pairs_on_standard_item_id_and_item_id", unique: true
+  add_index "item_standard_item_pairs", ["standard_item_id", "item_id", "exact_match"], name: "index_item_standard_item_pairs"
 
   create_table "item_statement_pairs", force: true do |t|
     t.integer "item_id",      null: false
