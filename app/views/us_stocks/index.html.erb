@@ -13,7 +13,7 @@
       <th>XBRL name</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody style="font-family: Verdana">
   <% @s_items.each do |si| %>
   <tr>
     <td><%= "#{si.name} (#{si.items.size})" %></td>
@@ -21,12 +21,7 @@
       <ul>
       <% si.items.each do |item| %>
         <li>
-          <%= "#{item.name} (#{item.stocks.size})" %>
-          <ul>
-            <% item.stocks.each do |stock| %>
-              <li><%= stock.ticker %></li>
-            <% end %>
-          </ul>
+          <%= link_to "#{item.name}", item_path(item) %> <%= "(#{item.stocks.size} stocks)" %>
         </li>
       <% end %>
       </ul>

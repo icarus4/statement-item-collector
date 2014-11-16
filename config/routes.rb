@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   get 'us' => 'us_stocks#index'
   get 'us/parse' => 'us_stocks#parse'
 
+  resources :items
+
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
   # post 'parsers/search/:search' => 'parsers#search'
