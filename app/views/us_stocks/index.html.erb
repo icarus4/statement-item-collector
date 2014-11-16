@@ -16,9 +16,9 @@
   <tbody style="font-family: Verdana">
   <% @s_items.each do |si| %>
   <tr>
-    <td><%= "#{si.name} (#{si.items.size})" %></td>
+    <td><%= si.name %></td>
     <td>
-      <ul>
+      <ul class='xbrl-name'>
       <% si.items.each do |item| %>
         <li>
           <%= link_to "#{item.name}", item_path(item) %> <%= "(#{item.stocks_count} stocks)" %>
