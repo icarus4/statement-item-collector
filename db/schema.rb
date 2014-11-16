@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140828042604) do
+ActiveRecord::Schema.define(version: 20141116085615) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -21,6 +21,14 @@ ActiveRecord::Schema.define(version: 20140828042604) do
 
   add_index "item_hierarchies", ["ancestor_id", "descendant_id", "generations"], name: "statement_item_anc_desc_udx", unique: true
   add_index "item_hierarchies", ["descendant_id"], name: "statement_item_desc_idx"
+
+  create_table "item_standard_item_pairs", force: true do |t|
+    t.integer "standard_item_id",   null: false
+    t.integer "item_id",            null: false
+    t.boolean "is_exactly_matched"
+  end
+
+  add_index "item_standard_item_pairs", ["standard_item_id", "item_id", "is_exactly_matched"], name: "index_item_standard_item_pairs"
 
   create_table "item_statement_pairs", force: true do |t|
     t.integer "item_id",      null: false
@@ -39,7 +47,7 @@ ActiveRecord::Schema.define(version: 20140828042604) do
   add_index "item_stock_pairs", ["stock_id"], name: "index_item_stock_pairs_on_stock_id"
 
   create_table "items", force: true do |t|
-    t.string   "name",        null: false
+    t.string   "name",                         null: false
     t.integer  "level"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -48,6 +56,9 @@ ActiveRecord::Schema.define(version: 20140828042604) do
     t.integer  "previous_id"
     t.integer  "next_id"
     t.string   "s_type"
+    t.string   "namespace"
+    t.integer  "stocks_count",     default: 0
+    t.integer  "statements_count", default: 0
   end
 
   add_index "items", ["has_value"], name: "index_items_on_has_value"
@@ -58,13 +69,25 @@ ActiveRecord::Schema.define(version: 20140828042604) do
   add_index "items", ["previous_id"], name: "index_items_on_previous_id"
   add_index "items", ["s_type"], name: "index_items_on_s_type"
 
+  create_table "standard_items", force: true do |t|
+    t.string   "name"
+    t.string   "chinese_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "standard_items", ["chinese_name"], name: "index_standard_items_on_chinese_name"
+  add_index "standard_items", ["name"], name: "index_standard_items_on_name"
+
   create_table "statements", force: true do |t|
-    t.integer  "stock_id",   null: false
-    t.integer  "year",       null: false
-    t.integer  "quarter",    null: false
+    t.integer  "stock_id",                null: false
+    t.integer  "year",                    null: false
+    t.integer  "quarter"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "s_type"
+    t.date     "end_date"
+    t.integer  "items_count", default: 0
   end
 
   add_index "statements", ["quarter"], name: "index_statements_on_quarter"
@@ -79,6 +102,7 @@ ActiveRecord::Schema.define(version: 20140828042604) do
     t.string   "country",      default: "tw", null: false
     t.string   "category"
     t.string   "sub_category"
+    t.integer  "items_count",  default: 0
   end
 
   add_index "stocks", ["category"], name: "index_stocks_on_category"

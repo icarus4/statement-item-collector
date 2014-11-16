@@ -4,9 +4,10 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'parsers#index'
+  root 'us_stocks#index'
 
   # get 'parsers' => 'parsers#ifrs'
+  get 'tw' => 'parsers#index'
   post 'parsers/parse/' => 'parsers#parse'
   get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
   get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
@@ -14,6 +15,9 @@ Rails.application.routes.draw do
   post 'parsers/parse_insurance_stocks' => 'parsers#parse_insurance_stocks'
   post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
   post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
+
+  get 'us' => 'us_stocks#index'
+  get 'us/parse' => 'us_stocks#parse'
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 

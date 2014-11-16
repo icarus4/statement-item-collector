@@ -12,6 +12,7 @@
 #  previous_id :integer
 #  next_id     :integer
 #  s_type      :string(255)
+#  namespace   :string(255)
 #
 
 class Item < ActiveRecord::Base
@@ -25,10 +26,13 @@ class Item < ActiveRecord::Base
   has_many :item_stock_pairs, dependent: :destroy, autosave: false
   has_many :stocks, through: :item_stock_pairs
 
+  has_many :item_standard_item_pairs
+  has_many :standard_items, through: :item_standard_item_pairs
 
-  validates :name, presence: true
-  validate  :name_should_be_unique_within_siblings
-  validates :has_value, inclusion: {in: [true, false]}
+  validates :name, presence: true, uniqueness: { scope: :namespace }
+  validates :namespace, presence: true, uniqueness: { scope: :name }
+  # validate  :name_should_be_unique_within_siblings
+  validates :has_value, inclusion: {in: [true, false]}, allow_nil: true
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
 
   scope :first_item, -> {where(previous_id: nil).first}

@@ -40,7 +40,7 @@ gem 'spring',        group: :development
 # gem 'debugger', group: [:development, :test]
 
 gem 'nokogiri'
-
+gem 'nikkou' # nokogiri wrapper
 gem 'simple_form'
 
 
@@ -51,13 +51,14 @@ group :development do
   # gem 'meta_request'
   gem 'rack-mini-profiler'
   gem 'railroady'
+  gem 'pry-byebug'
 end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
   gem 'factory_girl_rails'
   gem 'guard-rspec', '~> 4.2.10'
-  gem 'guard-livereload'
+  gem 'guard-livereload', require: false
   gem 'spring-commands-rspec', '~> 1.0.2'
   # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
