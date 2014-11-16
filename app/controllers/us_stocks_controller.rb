@@ -50,6 +50,11 @@ class UsStocksController < ApplicationController
       next if gfp.data.nil?
       next if ! gfp.data.has_key?(date_str)
 
+      # create all StandardItem for the first time so as to get the correct order of standard item like Google Finance
+      if StandardItem.all.size == 0
+        gfp.data[date_str].each { |item_name, value| StandardItem.create(name: item_name) }
+      end
+
       # Create record in DB
       @stock = Stock.find_or_create_by!(ticker: ticker, country: 'us')
       @statement = Statement.find_or_create_by!(stock_id: @stock.id, year: year, end_date: end_date, s_type: 'gaap')
