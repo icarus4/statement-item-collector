@@ -21,7 +21,7 @@
       <ul>
       <% si.items.each do |item| %>
         <li>
-          <%= link_to "#{item.name}", item_path(item) %> <%= "(#{item.stocks.size} stocks)" %>
+          <%= link_to "#{item.name}", item_path(item) %> <%= "(#{item.stocks_count} stocks)" %>
         </li>
       <% end %>
       </ul>
