@@ -4,9 +4,10 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'parsers#index'
+  root 'us_stocks#index'
 
   # get 'parsers' => 'parsers#ifrs'
+  get 'tw' => 'parsers#index'
   post 'parsers/parse/' => 'parsers#parse'
   get 'parsers/ifrs(/:table_name(/:category(/:sub_category)))' => 'parsers#ifrs'
   get 'parsers/gaap(/:table_name(/:category(/:sub_category)))' => 'parsers#gaap'
