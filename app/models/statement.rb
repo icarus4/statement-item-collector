@@ -19,9 +19,8 @@ class Statement < ActiveRecord::Base
   has_many :items, through: :item_statement_pairs
 
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
-  validates :year, uniqueness: {scope: [:stock_id, :quarter]}
-  validates :quarter, uniqueness: {scope: [:stock_id, :year]}
-  validates :stock_id, uniqueness: {scope: [:year, :quarter]}
+  validates :year, uniqueness: {scope: [:stock_id, :end_date]}
+  validates :end_date, presence: true
 
   scope :ifrs, -> { where(s_type: 'ifrs')}
   scope :gaap, -> { where(s_type: 'gaap')}
