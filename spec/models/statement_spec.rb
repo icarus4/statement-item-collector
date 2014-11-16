@@ -5,10 +5,11 @@
 #  id         :integer          not null, primary key
 #  stock_id   :integer          not null
 #  year       :integer          not null
-#  quarter    :integer          not null
+#  quarter    :integer
 #  created_at :datetime
 #  updated_at :datetime
 #  s_type     :string(255)
+#  end_date   :date
 #
 
 require 'spec_helper'

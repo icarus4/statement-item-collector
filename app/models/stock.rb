@@ -22,7 +22,7 @@ class Stock < ActiveRecord::Base
   validates :ticker, presence: true, uniqueness: {scope: :country, message: 'duplicated ticker in the current country'}
 
   validates :country, presence: true, inclusion: {in: %w(tw us hk)}
-  validates :category, presence: true, inclusion: {in: %w(common finance)}
+  validates :category, inclusion: {in: %w(common finance)}, allow_nil: true
   validates :sub_category, inclusion: {in: %w(bank insurance broker)}, allow_nil: true
 
   def ticker_should_be_a_string
