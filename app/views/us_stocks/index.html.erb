@@ -1,3 +1,29 @@
-<pre>
-<%= @data.to_yaml %>
-</pre>
+<table class="table table-striped table-condensed">
+  <thead>
+    <tr>
+      <th>Standard Item Name</th>
+      <th>XBRL name</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @s_items.each do |si| %>
+  <tr>
+    <td><%= "#{si.name} (#{si.items.size})" %></td>
+    <td>
+      <ul>
+      <% si.items.each do |item| %>
+        <li>
+          <%= "#{item.name} (#{item.stocks.size})" %>
+          <ul>
+            <% item.stocks.each do |stock| %>
+              <li><%= stock.ticker %></li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+      </ul>
+    </td>
+  </tr>
+  <% end %>
+  </tbody>
+</table>
