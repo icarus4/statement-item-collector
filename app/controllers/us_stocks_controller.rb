@@ -1,6 +1,6 @@
 class UsStocksController < ApplicationController
   def index
-    @s_items = StandardItem.all.includes(:items, :stocks).where(item_standard_item_pairs: {is_exactly_matched: true})
+    @s_items = StandardItem.all.includes(:items).where(item_standard_item_pairs: {is_exactly_matched: true})
   end
 
   def parse
