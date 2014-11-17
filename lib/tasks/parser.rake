@@ -7,11 +7,11 @@ namespace :parser do
     statement_root_dir_2 = '/home/icarus4/.sec_statement_parser/statements'
     statement_root_dir = File.directory?(statement_root_dir_1) ? statement_root_dir_1 : statement_root_dir_2
 
-    starting_alphabet = args[:starting_alphabet].upcase
+    starting_alphabet = args[:starting_alphabet].nil? ? nil : args[:starting_alphabet].upcase
     max_stock_parse_count = args[:max_stock_parse_count].to_i
 
     # Get file list array under statement_root_dir, but skip files with size greater than 20 MB
-    max_file_size = 20 * 1024 * 1024 # 20 MB
+    max_file_size = 30 * 1024 * 1024 # 30 MB
     @statements_paths = Dir.glob("#{statement_root_dir}/**/*").reject { |f| File.directory?(f) || File.size(f) > max_file_size }
 
     @stocks_parse_count = 0
@@ -74,6 +74,7 @@ namespace :parser do
 
       gfp.data[date_str].each do |item_name,value|
         next if value.nil? # skip items with nil value
+        next if value == 0 # skip items with zero value
 
         nodes = doc.text_equals(value.to_s) # text_equals() only accepts string
 
