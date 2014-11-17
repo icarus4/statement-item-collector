@@ -29,8 +29,8 @@ class UsStocksController < ApplicationController
       # here we consider a stock has 3 or over 3 statements is parsed
       next if Stock.where(ticker: ticker).first && Stock.where(ticker: ticker).first.statements.size >= 3
 
-      raise "invalid date_str #{date_str}" if date_str.size != 8 # this should not happen
-      raise 'invalid year' if year < 2009 || year > Time.now.year # this should not happen
+      next "invalid date_str #{date_str}" if date_str.size != 8 # this should not happen
+      next 'invalid year' if year < 2009 || year > Time.now.year # this should not happen
 
       if gfp.nil? || gfp.ticker != ticker
         begin
