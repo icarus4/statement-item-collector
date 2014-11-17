@@ -21,10 +21,15 @@ namespace :parser do
     gfp = nil # GoogleFinanceParse instance
     @statements_paths.each do |path|
       # path is something like: '/Users/icarus4/.sec_statement_parser/statements/FB/10-K/fb-20131231.xml'
-      ticker = path.split('/')[-3].upcase
-      date_str = path.split(/[-.]/)[-2]
-      end_date = Date.parse(date_str)
-      year = date_str.slice(0,4).to_i
+      begin
+        ticker = path.split('/')[-3].upcase
+        date_str = path.split(/[-.]/)[-2]
+        end_date = Date.parse(date_str)
+        year = date_str.slice(0,4).to_i
+      rescue
+        puts "Skip statement due to error path:\nticker:#{ticker}\ndate_str:#{date_str}\nend_date:#{end_date}\nyear:#{year}"
+        next
+      end
 
       # if starting alphabet is assigned, only process tickers match alphabet
       if starting_alphabet
