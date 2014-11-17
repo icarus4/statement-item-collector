@@ -10,22 +10,14 @@
   <thead>
     <tr>
       <th>Standard Item Name</th>
-      <th>XBRL name</th>
+      <th>Number of XBRL names</th>
     </tr>
   </thead>
   <tbody style="font-family: Verdana">
   <% @s_items.each do |si| %>
   <tr>
-    <td><%= si.name %></td>
-    <td>
-      <ul class='xbrl-name'>
-      <% si.items.each do |item| %>
-        <li>
-          <%= link_to "#{item.name}", item_path(item), target: '_blank' %> <%= "(#{item.stocks_count} stocks)" %>
-        </li>
-      <% end %>
-      </ul>
-    </td>
+    <td><%= link_to "#{si.name}", standard_item_path(si), target: '_blank' %></td>
+    <td><%= "#{si.items.size}" %></td>
   </tr>
   <% end %>
   </tbody>

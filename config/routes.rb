@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :stocks
   resources :statements
   resources :items
+  resources :standard_items
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
