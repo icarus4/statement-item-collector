@@ -21,7 +21,7 @@
       <ul class='xbrl-name'>
       <% si.items.each do |item| %>
         <li>
-          <%= link_to "#{item.name}", item_path(item) %> <%= "(#{item.stocks_count} stocks)" %>
+          <%= link_to "#{item.name}", item_path(item), target: '_blank' %> <%= "(#{item.stocks_count} stocks)" %>
         </li>
       <% end %>
       </ul>

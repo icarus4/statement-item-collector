@@ -2,8 +2,18 @@
 <hr>
 <h4>list of stocks contain <%= @item.name %>:</h4>
 <p>(Number of stocks: <%= @item.stocks.size %>)</p>
-<pre>
+<ul style='padding-left: 0'>
 <% @item.stocks.order(:ticker).each do |stock| %>
-<%= stock.ticker %>
+  <li>
+    <%= link_to "#{stock.ticker}", stock_path(stock) %>
+    <ul>
+      <% stock.statements.each do |statement| %>
+      <li>
+        <%= link_to "#{statement.end_date}", statement_path(statement)  %>
+      </li>
+      <% end %>
+    </ul>
+  </li>
 <% end %>
-</pre>
+</ul>
+

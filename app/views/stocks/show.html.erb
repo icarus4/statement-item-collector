@@ -1,0 +1,10 @@
+<h3><%= @stock.ticker %></h3>
+<hr>
+<h4>list of statements of <%= @stock.ticker %>:</h4>
+<p>(Number of statements: <%= @stock.statements.size %>)</p>
+<ul style='padding-left: 0'>
+<% @stock.statements.order(:end_date).each do |statement| %>
+<li><%= link_to "#{statement.year} (#{statement.end_date})", statement_path(statement) %></li>
+<% end %>
+</ul>
+
