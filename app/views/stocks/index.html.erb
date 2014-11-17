@@ -1,0 +1,15 @@
+<h3>List of all stocks</h3>
+<table class="table table-striped table-condensed">
+  <thead>
+    <th>Stock ticker</th>
+  </thead>
+  <tbody style="font-family: Verdana">
+  <% @stocks.each do |stock| %>
+    <tr>
+      <td>
+        <%= link_to "#{stock.ticker}", stock_path(stock), target: '_blank' %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

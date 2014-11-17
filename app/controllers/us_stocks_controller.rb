@@ -1,9 +1,4 @@
 class UsStocksController < ApplicationController
-  def index
-    # @s_items = StandardItem.all.includes(:items).where(item_standard_item_pairs: {is_exactly_matched: true})
-    @s_items = StandardItem.all
-  end
-
   def parse
     # dir_1 for Mac, dir_2 for Linux)
     statement_root_dir_1 = '/Users/icarus4/.sec_statement_parser/statements'

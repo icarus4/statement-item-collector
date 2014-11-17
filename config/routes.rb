@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'us_stocks#index'
+  root 'standard_items#index'
 
   # get 'parsers' => 'parsers#ifrs'
   get 'tw' => 'parsers#index'
@@ -16,7 +16,6 @@ Rails.application.routes.draw do
   post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
   post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
 
-  get 'us' => 'us_stocks#index'
   get 'us/parse' => 'us_stocks#parse'
 
   resources :stocks
