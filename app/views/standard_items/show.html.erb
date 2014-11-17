@@ -1,0 +1,39 @@
+<h3>Standard-Item: <span style='color: brown'><%= @si.name %></span></h3>
+<hr>
+<h4>List of exactly matched XBRL names</h4>
+<table class="table table-striped table-condensed">
+  <thead>
+    <th>Item name</th>
+  </thead>
+  <tbody style="font-family: Verdana">
+  <% @si.items.where(item_standard_item_pairs: {is_exactly_matched: true}).each do |item| %>
+    <tr>
+      <td>
+        <% if item.namespace != 'us-gaap' %><%= "#{item.namespace}:" %><% end %>
+        <%= link_to "#{item.name}", item_path(item), target: '_blank' %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<hr>
+<h4>List of <span style="color: red;">NOT</span> exactly matched XBRL names</h4>
+<table class="table table-striped table-condensed">
+  <thead>
+    <th>Item name</th>
+  </thead>
+  <tbody style="font-family: Verdana">
+  <% @si.items.where(item_standard_item_pairs: {is_exactly_matched: false}).each do |item| %>
+    <tr>
+      <td>
+        <% if item.namespace != 'us-gaap' %><%= "#{item.namespace}:" %><% end %>
+        <%= link_to "#{item.name}", item_path(item), target: '_blank' %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+

@@ -9,6 +9,6 @@
 
 # Join model for Item and Statement
 class ItemStatementPair < ActiveRecord::Base
-  belongs_to :item
-  belongs_to :statement
+  belongs_to :item, counter_cache: :statements_count
+  belongs_to :statement, counter_cache: :items_count
 end

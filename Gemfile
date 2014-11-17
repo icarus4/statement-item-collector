@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-ruby '2.0.0'
+ruby '2.1.4'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4.1.4'
+gem 'rails', '~> 4.1.7'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -40,7 +40,7 @@ gem 'spring',        group: :development
 # gem 'debugger', group: [:development, :test]
 
 gem 'nokogiri'
-
+gem 'nikkou' # nokogiri wrapper
 gem 'simple_form'
 
 
@@ -48,32 +48,39 @@ group :development do
   gem "better_errors"
   gem "binding_of_caller"
   gem "annotate"
+  # gem 'meta_request'
+  # gem 'rack-mini-profiler'
+  gem 'railroady'
+  gem 'pry-byebug'
 end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
+  gem 'factory_girl_rails'
   gem 'guard-rspec', '~> 4.2.10'
-  gem 'guard-livereload'
+  gem 'guard-livereload', require: false
   gem 'spring-commands-rspec', '~> 1.0.2'
   # gem 'rb-fsevent', '~> 0.9.4' if `uname` =~ /Darwin/
 end
 
+group :test do
+  gem 'faker'
+  gem 'capybara'
+  gem 'launchy'
+end
+
 group :production do
-  gem 'pg', '~> 0.17.1'
+  # gem 'pg', '~> 0.17.1'
 end
 
 gem 'bootstrap-sass', '~> 3.2.0'
-
 gem 'closure_tree'
-
 gem 'hirb-unicode'
-
 gem 'awesome_print'
-
 gem 'rest-client', '~> 1.7.2'
-
 gem 'iconv'
-
 gem 'faraday'
-
 gem 'rails_admin', '~> 0.6.2'
+gem 'sec_statement_parser', github: 'icarus4/sec_statement_parser', branch: 'master'
+gem 'colorize'
+gem 'puma'

@@ -1,0 +1,38 @@
+<h3>XBRL name: <span style="color: brown"><%= @item.name %></span></h3>
+<hr>
+
+<h4>Exactly matched standard item:</h4>
+<table class="table table-striped table-condensed">
+  <tbody>
+    <% @item.standard_items.joins(:item_standard_item_pairs).where(item_standard_item_pairs: {is_exactly_matched: true}).uniq.each do |si| %>
+      <tr><td><%= si.name %></td></tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h4>list of stocks contain <%= @item.name %>:</h4>
+<p>(Number of stocks: <%= @item.stocks.size %>)</p>
+
+<table class="table table-striped table-condensed">
+  <thead>
+    <th style="width: 30%">list of stocks contain <%= @item.name %></th>
+    <th>statements</th>
+  </thead>
+  <tbody>
+    <% @item.stocks.order(:ticker).each do |stock| %>
+    <tr>
+      <td><%= link_to "#{stock.ticker}", stock_path(stock) %></td>
+      <td>
+        <ul>
+        <% stock.statements.each do |statement| %>
+          <li><%= link_to "#{statement.end_date}", statement_path(statement)  %></li>
+        <% end %>
+        </ul>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+

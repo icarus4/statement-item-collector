@@ -2,16 +2,19 @@
 #
 # Table name: items
 #
-#  id          :integer          not null, primary key
-#  name        :string(255)      not null
-#  level       :integer
-#  created_at  :datetime
-#  updated_at  :datetime
-#  parent_id   :integer
-#  has_value   :boolean
-#  previous_id :integer
-#  next_id     :integer
-#  s_type      :string(255)
+#  id               :integer          not null, primary key
+#  name             :string(255)      not null
+#  level            :integer
+#  created_at       :datetime
+#  updated_at       :datetime
+#  parent_id        :integer
+#  has_value        :boolean
+#  previous_id      :integer
+#  next_id          :integer
+#  s_type           :string(255)
+#  namespace        :string(255)
+#  stocks_count     :integer          default(0)
+#  statements_count :integer          default(0)
 #
 
 class Item < ActiveRecord::Base
@@ -25,10 +28,13 @@ class Item < ActiveRecord::Base
   has_many :item_stock_pairs, dependent: :destroy, autosave: false
   has_many :stocks, through: :item_stock_pairs
 
+  has_many :item_standard_item_pairs
+  has_many :standard_items, through: :item_standard_item_pairs
 
-  validates :name, presence: true
-  validate  :name_should_be_unique_within_siblings
-  validates :has_value, inclusion: {in: [true, false]}
+  validates :name, presence: true, uniqueness: { scope: :namespace }
+  validates :namespace, presence: true, uniqueness: { scope: :name }
+  # validate  :name_should_be_unique_within_siblings
+  validates :has_value, inclusion: {in: [true, false]}, allow_nil: true
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
 
   scope :first_item, -> {where(previous_id: nil).first}
