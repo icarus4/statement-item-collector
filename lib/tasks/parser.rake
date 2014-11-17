@@ -12,7 +12,7 @@ namespace :parser do
 
     # Get file list array under statement_root_dir, but skip files with size greater than 20 MB
     max_file_size = 30 * 1024 * 1024 # 30 MB
-    @statements_paths = Dir.glob("#{statement_root_dir}/**/*").reject { |f| File.directory?(f) || File.size(f) > max_file_size }
+    @statements_paths = Dir.glob("#{statement_root_dir}/**/*").sort.reject { |f| File.directory?(f) || File.size(f) > max_file_size }
 
     @stocks_parse_count = 0
     @statements_parse_count = 0
