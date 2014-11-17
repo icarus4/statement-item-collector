@@ -60,3 +60,6 @@ todo.TODO
 
 config/deploy.rb
 .secret
+
+
+config/database.yml

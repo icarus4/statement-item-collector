@@ -69,8 +69,8 @@ group :test do
   gem 'launchy'
 end
 
-group :production do
-  # gem 'pg', '~> 0.17.1'
+group :production, :development do
+  gem 'pg', '~> 0.17.1'
 end
 
 gem 'bootstrap-sass', '~> 3.2.0'
