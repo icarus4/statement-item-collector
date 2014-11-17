@@ -39,10 +39,6 @@ class UsStocksController < ApplicationController
         end
       end
 
-      # open statement file
-      file = File.open(path)
-      doc = Nokogiri::XML(file)
-
       # continue with next statement if data is nil or there is NO such date string in gfp.data
       next if gfp.data.nil?
       next if ! gfp.data.has_key?(date_str)
@@ -52,6 +48,10 @@ class UsStocksController < ApplicationController
         gfp.data[date_str].each { |item_name, value| StandardItem.create(name: item_name) }
       end
 
+      # open statement file
+      file = File.open(path)
+      doc = Nokogiri::XML(file)
+
       # Create record in DB
       @stock = Stock.find_or_create_by!(ticker: ticker, country: 'us')
       @statement = Statement.find_or_create_by!(stock_id: @stock.id, year: year, end_date: end_date, s_type: 'gaap')
@@ -60,6 +60,7 @@ class UsStocksController < ApplicationController
 
       gfp.data[date_str].each do |item_name,value|
         next if value.nil? # skip items with nil value
+
         nodes = doc.text_equals(value.to_s) # text_equals() only accepts string
 
         if nodes.size > 0
