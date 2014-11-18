@@ -23,18 +23,18 @@ namespace :parser do
       # path is something like: '/Users/icarus4/.sec_statement_parser/statements/FB/10-K/fb-20131231.xml'
       begin
         ticker = path.split('/')[-3].upcase
+        # if starting alphabet is assigned, only process tickers match alphabet
+        if starting_alphabet
+          next if ticker[0,starting_alphabet.length] != starting_alphabet
+        end
         date_str = path.split(/[-.]/)[-2]
         end_date = Date.parse(date_str)
         year = date_str.slice(0,4).to_i
       rescue
-        puts "Skip statement due to error path:\nticker:#{ticker}\ndate_str:#{date_str}\nend_date:#{end_date}\nyear:#{year}"
+        puts "Skip statement due to error path. ticker:#{ticker} date_str:#{date_str} end_date:#{end_date} year:#{year}"
         next
       end
 
-      # if starting alphabet is assigned, only process tickers match alphabet
-      if starting_alphabet
-        next if ticker[0,starting_alphabet.length] != starting_alphabet
-      end
 
       # skip parsed stocks
       # here we consider a stock has 3 or over 3 statements is parsed
