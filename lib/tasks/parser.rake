@@ -4,6 +4,11 @@ namespace :parser do
   task :parse, [:starting_alphabet, :max_stock_parse_count] => :environment do |task, args|
     puts "Starting task at #{Time.now}"
 
+    interrupted = false
+    trap('INT') { interrupted = true }
+    trap('TERM') { interrupted = true }
+
+
     # dir_1 for Mac, dir_2 for Linux)
     statement_root_dir_1 = '/Users/icarus4/.sec_statement_parser/statements'
     statement_root_dir_2 = '/home/icarus4/.sec_statement_parser/statements'
@@ -22,6 +27,13 @@ namespace :parser do
 
     gfp = nil # GoogleFinanceParse instance
     @statements_paths.each do |path|
+
+      if interrupted == true
+        puts "signal INT/TERM catched, exiting..."
+        sleep 1
+        break
+      end
+
       # path is something like: '/Users/icarus4/.sec_statement_parser/statements/FB/10-K/fb-20131231.xml'
       begin
         ticker = path.split('/')[-3].upcase
