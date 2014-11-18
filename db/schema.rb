@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141116085615) do
+ActiveRecord::Schema.define(version: 20141118145936) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -29,6 +29,19 @@ ActiveRecord::Schema.define(version: 20141116085615) do
   end
 
   add_index "item_standard_item_pairs", ["standard_item_id", "item_id", "is_exactly_matched"], name: "index_item_standard_item_pairs"
+
+  create_table "item_standard_item_statement_pairs", force: true do |t|
+    t.integer "item_id",            null: false
+    t.integer "standard_item_id",   null: false
+    t.integer "statement_id",       null: false
+    t.boolean "is_exactly_matched"
+  end
+
+  add_index "item_standard_item_statement_pairs", ["is_exactly_matched"], name: "index_item_standard_item_statement_pairs_on_is_exactly_matched"
+  add_index "item_standard_item_statement_pairs", ["item_id", "standard_item_id", "statement_id", "is_exactly_matched"], name: "index_item_standard_item_statement_pairs"
+  add_index "item_standard_item_statement_pairs", ["item_id"], name: "index_item_standard_item_statement_pairs_on_item_id"
+  add_index "item_standard_item_statement_pairs", ["standard_item_id"], name: "index_item_standard_item_statement_pairs_on_standard_item_id"
+  add_index "item_standard_item_statement_pairs", ["statement_id"], name: "index_item_standard_item_statement_pairs_on_statement_id"
 
   create_table "item_statement_pairs", force: true do |t|
     t.integer "item_id",      null: false

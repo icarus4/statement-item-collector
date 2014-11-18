@@ -93,6 +93,7 @@ namespace :parser do
             xbrl_name = node.name
             item = Item.find_or_create_by!(name: xbrl_name, s_type: 'gaap', namespace: node.namespace.prefix)
             ItemStandardItemPair.find_or_create_by(item_id: item.id, standard_item_id: si.id, is_exactly_matched: is_exactly_matched)
+            ItemStandardItemStatementPair.find_or_create_by(item_id: item.id, standard_item_id: si.id, statement_id: @statement.id, is_exactly_matched: is_exactly_matched)
             @stock.items << item unless @stock.items.include?(item)
             @statement.items << item unless @statement.items.include?(item)
 
