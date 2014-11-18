@@ -2,6 +2,8 @@ namespace :parser do
 
   desc "Parse US stocks"
   task :parse, [:starting_alphabet, :max_stock_parse_count] => :environment do |task, args|
+    puts "Starting task at #{Time.now}"
+
     # dir_1 for Mac, dir_2 for Linux)
     statement_root_dir_1 = '/Users/icarus4/.sec_statement_parser/statements'
     statement_root_dir_2 = '/home/icarus4/.sec_statement_parser/statements'
