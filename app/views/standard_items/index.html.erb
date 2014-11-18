@@ -4,7 +4,7 @@
 <ul>
   <li>Parsed stocks count: <%= Stock.all.size %></li>
   <li>Parsed statements count: <%= Statement.all.size %></li>
-  <li>Parsed XBRL names count: <%= Item.all.size %></li>
+  <li>XBRL items count: <%= Item.all.size %></li>
 </ul>
 <hr>
 <p>Exactly matched XBRL names 說明: <br>某股票的某季財報其 Standard Item 在 Google Finance 的數值與對應的 XBRL 檔案做比較，若 XBRL 只找到唯一的一個 element，則此 element 即為 exactly matched element，element name 即為 exactly matched XBRL name</p>
