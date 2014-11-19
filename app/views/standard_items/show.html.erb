@@ -6,11 +6,11 @@
     <th>Item name</th>
   </thead>
   <tbody style="font-family: Verdana">
-  <% @si.items.where(item_standard_item_pairs: {is_exactly_matched: true}).each do |item| %>
+  <% @exactly_matched_items.each do |item| %>
     <tr>
       <td>
         <% if item.namespace != 'us-gaap' %><%= "#{item.namespace}:" %><% end %>
-        <%= link_to "#{item.name}", item_path(item), target: '_blank' %>
+        <%= link_to "#{item.name} ", item_path(item), target: '_blank' %> &nbsp;&nbsp;&nbsp;&nbsp;<%= "stocks: #{item.stocks.size}" %>
       </td>
     </tr>
   <% end %>
@@ -25,7 +25,7 @@
     <th>Item name</th>
   </thead>
   <tbody style="font-family: Verdana">
-  <% @si.items.where(item_standard_item_pairs: {is_exactly_matched: false}).each do |item| %>
+  <% @not_exactly_matched_items.each do |item| %>
     <tr>
       <td>
         <% if item.namespace != 'us-gaap' %><%= "#{item.namespace}:" %><% end %>
