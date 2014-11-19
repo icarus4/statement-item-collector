@@ -16,4 +16,6 @@ class StandardItem < ActiveRecord::Base
   has_many :stocks, through: :items
 
   has_many :item_standard_item_statement_pairs
+
+  has_many :xbrl_names, foreign_key: 'standard_item_id', class_name: 'SiXbrlMapping'
 end

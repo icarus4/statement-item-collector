@@ -3,9 +3,9 @@
 # Table name: item_standard_item_statement_pairs
 #
 #  id                 :integer          not null, primary key
-#  item_id            :integer
-#  standard_item_id   :integer
-#  statement_id       :integer
+#  item_id            :integer          not null
+#  standard_item_id   :integer          not null
+#  statement_id       :integer          not null
 #  is_exactly_matched :boolean
 #
 

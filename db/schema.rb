@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118145936) do
+ActiveRecord::Schema.define(version: 20141119122529) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -81,6 +81,13 @@ ActiveRecord::Schema.define(version: 20141118145936) do
   add_index "items", ["parent_id"], name: "index_items_on_parent_id"
   add_index "items", ["previous_id"], name: "index_items_on_previous_id"
   add_index "items", ["s_type"], name: "index_items_on_s_type"
+
+  create_table "si_xbrl_mappings", force: true do |t|
+    t.integer  "standard_item_id"
+    t.string   "xbrl_name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "standard_items", force: true do |t|
     t.string   "name"
