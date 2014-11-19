@@ -19,6 +19,8 @@ class Statement < ActiveRecord::Base
   has_many :item_statement_pairs, dependent: :destroy
   has_many :items, through: :item_statement_pairs
 
+  has_many :item_standard_item_statement_pairs
+
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
   validates :year, uniqueness: {scope: [:stock_id, :end_date]}
   validates :end_date, presence: true

@@ -36,5 +36,5 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   # Show SQL queries in Rails console
-  ActiveRecord::Base.logger = Logger.new(STDOUT)
+  # ActiveRecord::Base.logger = Logger.new(STDOUT)
 end

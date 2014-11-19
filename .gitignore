@@ -60,3 +60,9 @@ todo.TODO
 
 config/deploy.rb
 .secret
+
+# database config
+config/database.yml
+
+# parser output
+*.out

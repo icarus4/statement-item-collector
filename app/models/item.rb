@@ -31,6 +31,8 @@ class Item < ActiveRecord::Base
   has_many :item_standard_item_pairs
   has_many :standard_items, through: :item_standard_item_pairs
 
+  has_many :item_standard_item_statement_pairs
+
   validates :name, presence: true, uniqueness: { scope: :namespace }
   validates :namespace, presence: true, uniqueness: { scope: :name }
   # validate  :name_should_be_unique_within_siblings
