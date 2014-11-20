@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141119122529) do
+ActiveRecord::Schema.define(version: 20141120043809) do
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -129,5 +129,19 @@ ActiveRecord::Schema.define(version: 20141119122529) do
   add_index "stocks", ["country"], name: "index_stocks_on_country"
   add_index "stocks", ["sub_category"], name: "index_stocks_on_sub_category"
   add_index "stocks", ["ticker"], name: "index_stocks_on_ticker"
+
+  create_table "value_comparisons", force: true do |t|
+    t.integer  "standard_item_id"
+    t.integer  "statement_id"
+    t.integer  "gfs_value"
+    t.integer  "xbrl_value"
+    t.integer  "result"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "value_comparisons", ["result"], name: "index_value_comparisons_on_result"
+  add_index "value_comparisons", ["standard_item_id"], name: "index_value_comparisons_on_standard_item_id"
+  add_index "value_comparisons", ["statement_id"], name: "index_value_comparisons_on_statement_id"
 
 end
