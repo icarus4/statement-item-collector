@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: parser_stats
+# Table name: coverage_stats
 #
 #  id                          :integer          not null, primary key
 #  statement_id                :integer
@@ -8,14 +8,13 @@
 #  xbrl_value_count            :integer
 #  value_match_count           :integer
 #  xbrl_value_discovered_ratio :float
-#  accuracy_ratio              :float
+#  coverage_ratio              :float
 #  created_at                  :datetime
 #  updated_at                  :datetime
 #
 
-# Read about factories at https://github.com/thoughtbot/factory_girl
+require 'rails_helper'
 
-FactoryGirl.define do
-  factory :parser_stat do
-  end
+RSpec.describe CoverageStat, :type => :model do
+  pending "add some examples to (or delete) #{__FILE__}"
 end

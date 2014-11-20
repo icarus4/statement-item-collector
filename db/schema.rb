@@ -11,7 +11,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120080219) do
+ActiveRecord::Schema.define(version: 20141120084013) do
+
+  create_table "coverage_stats", force: true do |t|
+    t.integer  "statement_id"
+    t.integer  "gfs_value_count"
+    t.integer  "xbrl_value_count"
+    t.integer  "value_match_count"
+    t.float    "xbrl_value_discovered_ratio"
+    t.float    "coverage_ratio"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "coverage_stats", ["coverage_ratio"], name: "index_coverage_stats_on_coverage_ratio"
+  add_index "coverage_stats", ["gfs_value_count"], name: "index_coverage_stats_on_gfs_value_count"
+  add_index "coverage_stats", ["statement_id"], name: "index_coverage_stats_on_statement_id"
+  add_index "coverage_stats", ["value_match_count"], name: "index_coverage_stats_on_value_match_count"
+  add_index "coverage_stats", ["xbrl_value_count"], name: "index_coverage_stats_on_xbrl_value_count"
+  add_index "coverage_stats", ["xbrl_value_discovered_ratio"], name: "index_coverage_stats_on_xbrl_value_discovered_ratio"
 
   create_table "item_hierarchies", id: false, force: true do |t|
     t.integer "ancestor_id",   null: false
@@ -81,24 +99,6 @@ ActiveRecord::Schema.define(version: 20141120080219) do
   add_index "items", ["parent_id"], name: "index_items_on_parent_id"
   add_index "items", ["previous_id"], name: "index_items_on_previous_id"
   add_index "items", ["s_type"], name: "index_items_on_s_type"
-
-  create_table "parser_stats", force: true do |t|
-    t.integer  "statement_id"
-    t.integer  "gfs_value_count"
-    t.integer  "xbrl_value_count"
-    t.integer  "value_match_count"
-    t.float    "xbrl_value_discovered_ratio"
-    t.float    "accuracy_ratio"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "parser_stats", ["accuracy_ratio"], name: "index_parser_stats_on_accuracy_ratio"
-  add_index "parser_stats", ["gfs_value_count"], name: "index_parser_stats_on_gfs_value_count"
-  add_index "parser_stats", ["statement_id"], name: "index_parser_stats_on_statement_id"
-  add_index "parser_stats", ["value_match_count"], name: "index_parser_stats_on_value_match_count"
-  add_index "parser_stats", ["xbrl_value_count"], name: "index_parser_stats_on_xbrl_value_count"
-  add_index "parser_stats", ["xbrl_value_discovered_ratio"], name: "index_parser_stats_on_xbrl_value_discovered_ratio"
 
   create_table "si_xbrl_mappings", force: true do |t|
     t.integer  "standard_item_id"
