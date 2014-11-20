@@ -5,8 +5,8 @@
 #  id               :integer          not null, primary key
 #  standard_item_id :integer
 #  statement_id     :integer
-#  gfs_value        :integer
-#  xbrl_value       :integer
+#  gfs_value        :float
+#  xbrl_value       :float
 #  result           :integer
 #  created_at       :datetime
 #  updated_at       :datetime

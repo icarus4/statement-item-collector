@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120084013) do
+ActiveRecord::Schema.define(version: 20141120093744) do
 
   create_table "coverage_stats", force: true do |t|
     t.integer  "statement_id"
@@ -151,8 +151,8 @@ ActiveRecord::Schema.define(version: 20141120084013) do
   create_table "value_comparisons", force: true do |t|
     t.integer  "standard_item_id"
     t.integer  "statement_id"
-    t.integer  "gfs_value"
-    t.integer  "xbrl_value"
+    t.float    "gfs_value"
+    t.float    "xbrl_value"
     t.integer  "result"
     t.datetime "created_at"
     t.datetime "updated_at"
