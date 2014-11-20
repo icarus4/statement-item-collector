@@ -23,6 +23,8 @@ class Statement < ActiveRecord::Base
 
   has_many :value_comparisons
 
+  has_many :parser_stats
+
   validates :s_type, presence: true, inclusion: {in: %w(ifrs gaap)}
   validates :year, uniqueness: {scope: [:stock_id, :end_date]}
   validates :end_date, presence: true
