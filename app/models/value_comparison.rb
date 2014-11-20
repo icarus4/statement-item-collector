@@ -5,8 +5,8 @@
 #  id               :integer          not null, primary key
 #  standard_item_id :integer
 #  statement_id     :integer
-#  gfs_value        :integer
-#  xbrl_value       :integer
+#  gfs_value        :float
+#  xbrl_value       :float
 #  result           :integer
 #  created_at       :datetime
 #  updated_at       :datetime
@@ -18,8 +18,6 @@ class ValueComparison < ActiveRecord::Base
 
   validates :standard_item_id, presence: true, uniqueness: { scope: :statement_id }
   validates :statement_id, presence: true
-
-  before_save :caclulate_value_comparison_result
 
   # unknown: either gfs_value or xbrl_value is lacked
   # matched: gfs_value == xbrl_value (and both of them are not nil)
