@@ -90,7 +90,6 @@ namespace :coverage do
 
           # we assume there is only one value existed, skip if we number of values is not one
           next if value == nil || value.size != 1
-          # puts "#{ticker} #{si.name} #{value.first}"
 
           # assign and calculate comparison result
           vc.xbrl_value = value.first.to_f
