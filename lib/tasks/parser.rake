@@ -84,8 +84,9 @@ namespace :parser do
       # open statement file
       file = File.open(path)
       doc = Nokogiri::XML(file)
+      file.close
 
-      # Create record in DB
+      # Find or create record
       @stock = Stock.find_or_create_by!(ticker: ticker, country: 'us')
       @statement = Statement.find_or_create_by!(stock_id: @stock.id, year: year, end_date: end_date, s_type: 'gaap')
 
@@ -113,8 +114,6 @@ namespace :parser do
           end
         end
       end
-
-      file.close
     end
   end
 end
