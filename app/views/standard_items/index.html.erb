@@ -8,6 +8,7 @@
 </ul>
 <hr>
 <p>Exactly matched XBRL names 說明: <br>某股票的某季財報其 Standard Item 在 Google Finance 的數值與對應的 XBRL 檔案做比較，若 XBRL 只找到唯一的一個 element，則此 element 即為 exactly matched element，element name 即為 exactly matched XBRL name</p>
+<p>Coverage ratio 說明：<br>利用已知的可能 xbrl 名稱（人工決定）去 parse 所有年報的 xbrl 檔案，再與 Google Finance 的值做比對，能正確抓出數值的財報比例。</p>
 <hr>
 <h3>Results</h3>
 <table class="table table-striped table-condensed">
@@ -16,6 +17,7 @@
       <th>Standard Item Name (from Google Finance)</th>
       <th>Number of <span style="color: red">exactly</span> matched XBRL names</th>
       <th>Number of total XBRL names</th>
+      <th>Coverage ratio</th>
     </tr>
   </thead>
   <tbody style="font-family: Verdana">
@@ -24,6 +26,15 @@
     <td><%= link_to "#{si.name}", standard_item_path(si), target: '_blank' %></td>
     <td><%= "#{si.items.joins(:item_standard_item_pairs).where(item_standard_item_pairs:{is_exactly_matched: true}).uniq.size}" %></td>
     <td><%= "#{si.items.size}" %></td>
+
+    <!-- show coverage ratio -->
+    <% ratio = si.coverage_ratio %>
+    <% if ratio == nil %>
+      <td></td>
+    <% else %>
+      <td><%= "#{(ratio*100).round(1)} " %>%</td>
+    <% end %>
+
   </tr>
   <% end %>
   </tbody>

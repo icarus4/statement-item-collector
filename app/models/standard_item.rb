@@ -20,4 +20,12 @@ class StandardItem < ActiveRecord::Base
   has_many :xbrl_names, foreign_key: 'standard_item_id', class_name: 'SiXbrlMapping'
 
   has_many :value_comparisons
+
+  def coverage_ratio
+    value_match_count   = ValueComparison.joins(standard_item: :xbrl_names).where(standard_item_id: self.id).matched.uniq.size
+    value_unmatch_count = ValueComparison.joins(standard_item: :xbrl_names).where(standard_item_id: self.id).unmatched.uniq.size
+
+    return nil if value_match_count + value_unmatch_count == 0
+    return (value_match_count.to_f / (value_match_count + value_unmatch_count)).round(3)
+  end
 end

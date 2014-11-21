@@ -2,6 +2,16 @@
 
 <hr>
 
+<% ratio = @si.coverage_ratio %>
+<% if ratio == nil %>
+  <h4>Coverage ratio: 無資料</h4>
+<% else %>
+  <h4>Coverage ratio: <%= (@si.coverage_ratio*100).round(1) %> %</h4>
+<% end %>
+
+
+<hr>
+
 <h4>此區為 <%= @si.name %> 對應的可能 XBRL 名稱 </h4>
 <table class="table table-striped table-condensed">
   <thead>

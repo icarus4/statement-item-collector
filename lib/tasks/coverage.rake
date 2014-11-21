@@ -14,10 +14,8 @@ namespace :coverage do
       cs.value_match_count    = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).matched.uniq.size
       cs.value_unmatch_count  = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).unmatched.uniq.size
 
-      if cs.gfs_value_count != 0
-        cs.xbrl_value_discovered_ratio = (cs.xbrl_value_count.to_f / cs.gfs_value_count).round(3)
-        cs.coverage_ratio = (cs.value_match_count.to_f / (cs.value_match_count + cs.value_unmatch_count)).round(3)
-      end
+      cs.xbrl_value_discovered_ratio = (cs.xbrl_value_count.to_f / cs.gfs_value_count).round(3) if cs.gfs_value_count != 0
+      cs.coverage_ratio = (cs.value_match_count.to_f / (cs.value_match_count + cs.value_unmatch_count)).round(3) if cs.value_match_count + cs.value_unmatch_count != 0
 
       cs.save
     end
