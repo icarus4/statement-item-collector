@@ -4,7 +4,7 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  root 'standard_items#index'
+  root 'homepage#index'
 
   # get 'parsers' => 'parsers#ifrs'
   get 'tw' => 'parsers#index'
@@ -16,10 +16,10 @@ Rails.application.routes.draw do
   post 'parsers/parse_broker_stocks' => 'parsers#parse_broker_stocks'
   post 'parsers/parse_financial_stocks' => 'parsers#parse_financial_stocks'
 
-  resources :stocks
-  resources :statements
-  resources :items
-  resources :standard_items
+  resources :stocks, only: [:show, :index]
+  resources :statements, only: [:show, :index]
+  resources :items, only: [:show, :index]
+  resources :standard_items, only: [:show, :index]
 
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
