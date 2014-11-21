@@ -1,12 +1,12 @@
-<h3>Standard-Item: <span style='color: brown'><%= @si.name %></span></h3>
+<h3>標準欄位名稱 <span style='color: brown'><%= @si.name %> </span>之統計資料</h3>
 
 <hr>
 
-<h4>List of exactly matched XBRL names</h4>
+<h4>此區為 <%= @si.name %> 對應的可能 XBRL 名稱 </h4>
 <table class="table table-striped table-condensed">
   <thead>
-    <th>標準欄位名稱</th>
-    <th>股票含此標準欄位總數</th>
+    <th>XBRL名稱</th>
+    <th>含此XBRL名稱之股票總數</th>
   </thead>
   <tbody style="font-family: Verdana">
   <% @exactly_matched_items.each do |item| %>
@@ -25,11 +25,12 @@
 
 <hr>
 
-<h4>List of <span style="color: red;">NOT</span> exactly matched XBRL names</h4>
+
+<h4>此區可能為 <%= @si.name %> 對應之 XBRL 名稱，但包含較多非正確對應的 XBRL 名稱</h4>
 <table class="table table-striped table-condensed">
   <thead>
-    <th>標準欄位名稱</th>
-    <th>股票含此標準欄位總數</th>
+    <th>XBRL名稱</th>
+    <th>含此XBRL名稱之股票總數</th>
   </thead>
   <tbody style="font-family: Verdana">
   <% @not_exactly_matched_items.each do |item| %>

@@ -1,5 +1,29 @@
 namespace :coverage do
-  desc "TODO"
+  desc "calculate statistics data"
+  task calculate: :environment do
+    puts "Starting task at #{Time.now}"
+
+    interrupted = false
+    trap('INT') { interrupted = true }
+    trap('TERM') { interrupted = true }
+
+    Statement.find_each(batch_size: 100) do |st|
+      cs = CoverageStat.find_or_create_by(statement_id: st.id)
+      cs.gfs_value_count    = ValueComparison.where(statement_id: st.id).where.not(gfs_value: nil).size
+      cs.xbrl_value_count   = ValueComparison.where(statement_id: st.id).where.not(xbrl_value: nil).size
+      cs.value_match_count  = ValueComparison.where(statement_id: st.id).matched.size
+      cs.value_unmatch_count  = ValueComparison.where(statement_id: st.id).unmatched.size
+
+      if cs.gfs_value_count != 0
+        cs.xbrl_value_discovered_ratio = (cs.xbrl_value_count.to_f / cs.gfs_value_count).round(3)
+        cs.coverage_ratio = (cs.value_match_count.to_f / (cs.value_match_count + cs.value_unmatch_count)).round(3)
+      end
+
+      cs.save
+    end
+  end
+
+  desc "parse values from xbrl file by possible xbrl names"
   task :parse, [:starting_alphabet, :max_stock_parse_count] => :environment do |task, args|
     puts "Starting task at #{Time.now}"
 

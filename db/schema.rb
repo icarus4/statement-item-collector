@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120093744) do
+ActiveRecord::Schema.define(version: 20141121080323) do
 
   create_table "coverage_stats", force: true do |t|
     t.integer  "statement_id"
@@ -22,12 +22,14 @@ ActiveRecord::Schema.define(version: 20141120093744) do
     t.float    "coverage_ratio"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "value_unmatch_count"
   end
 
   add_index "coverage_stats", ["coverage_ratio"], name: "index_coverage_stats_on_coverage_ratio"
   add_index "coverage_stats", ["gfs_value_count"], name: "index_coverage_stats_on_gfs_value_count"
   add_index "coverage_stats", ["statement_id"], name: "index_coverage_stats_on_statement_id"
   add_index "coverage_stats", ["value_match_count"], name: "index_coverage_stats_on_value_match_count"
+  add_index "coverage_stats", ["value_unmatch_count"], name: "index_coverage_stats_on_value_unmatch_count"
   add_index "coverage_stats", ["xbrl_value_count"], name: "index_coverage_stats_on_xbrl_value_count"
   add_index "coverage_stats", ["xbrl_value_discovered_ratio"], name: "index_coverage_stats_on_xbrl_value_discovered_ratio"
 
