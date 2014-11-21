@@ -9,10 +9,10 @@ namespace :coverage do
 
     Statement.find_each(batch_size: 100) do |st|
       cs = CoverageStat.find_or_create_by(statement_id: st.id)
-      cs.gfs_value_count    = ValueComparison.where(statement_id: st.id).where.not(gfs_value: nil).size
-      cs.xbrl_value_count   = ValueComparison.where(statement_id: st.id).where.not(xbrl_value: nil).size
-      cs.value_match_count  = ValueComparison.where(statement_id: st.id).matched.size
-      cs.value_unmatch_count  = ValueComparison.where(statement_id: st.id).unmatched.size
+      cs.gfs_value_count      = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).where.not(gfs_value: nil).uniq.size
+      cs.xbrl_value_count     = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).where.not(xbrl_value: nil).uniq.size
+      cs.value_match_count    = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).matched.uniq.size
+      cs.value_unmatch_count  = ValueComparison.joins(standard_item: :xbrl_names).where(statement_id: st.id).unmatched.uniq.size
 
       if cs.gfs_value_count != 0
         cs.xbrl_value_discovered_ratio = (cs.xbrl_value_count.to_f / cs.gfs_value_count).round(3)
