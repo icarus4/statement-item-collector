@@ -1,4 +1,5 @@
 namespace :coverage do
+
   desc "calculate statistics data"
   task calculate: :environment do
     puts "Starting task at #{Time.now}"
@@ -19,6 +20,8 @@ namespace :coverage do
 
       cs.save
     end
+
+    puts "Done."
   end
 
   desc "parse values from xbrl file by possible xbrl names"
@@ -86,6 +89,12 @@ namespace :coverage do
           # search xbrl for matching item
           value = xp.get_value_str_by_namespace_name('us-gaap', xbrl.xbrl_name)
 
+          # if cannot get value by namespace of us-gaap, try to get value by namespace of ticker itself
+          begin
+            value = xp.get_value_str_by_namespace_name(ticker, xbrl.xbrl_name) if value == nil
+          rescue
+          end
+
           # we assume there is only one value existed, skip if we number of values is not one
           next if value == nil || value.size != 1
 
@@ -93,9 +102,12 @@ namespace :coverage do
           vc.xbrl_value = value.first.to_f
           if vc.save
             vc.caclulate_value_comparison_result
+            break if vc.matched?
           end
         end
       end
     end
+
+    puts "Done."
   end
 end
