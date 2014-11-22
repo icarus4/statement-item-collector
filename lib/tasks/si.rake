@@ -31,9 +31,29 @@ namespace :si do
         si.xbrl_names.find_or_create_by(xbrl_name: 'CostOfPurchasedOilAndGas')
 
       when 'Gross Profit'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'GrossProfit')
       when 'Selling/General/Admin. Expenses, Total'
       when 'Research & Development'
       when 'Depreciation/Amortization'
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'Depreciation')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'DepreciationAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'DepreciationDepletionAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'DepreciationAmortizationAndAccretionNet')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'DepreciationNonproduction')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'OtherDepreciationAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'CostOfServicesDepreciationAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'UtilitiesOperatingExpenseDepreciationAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'CostOfGoodsSoldDepreciationDepletionAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'CostOfServicesDepreciation')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'CostOfGoodsAndServicesSoldDepreciationAndAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'AmortizationOfIntangibleAssets')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'FiniteLivedIntangibleAssetsAccumulatedAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'AdjustmentForAmortization')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'FiniteLivedIntangibleAssetsAmortizationExpense')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths')
+        # si.xbrl_names.find_or_create_by(xbrl_name: 'AmortizationOfAcquiredIntangibleAssets')
+
       when 'Interest Expense(Income) - Net Operating'
       when 'Unusual Expense (Income)'
       when 'Other Operating Expenses, Total'
@@ -53,6 +73,7 @@ namespace :si do
       when 'Net Income'
         si.xbrl_names.find_or_create_by(xbrl_name: 'NetIncomeLoss')
         si.xbrl_names.find_or_create_by(xbrl_name: 'ProfitLoss')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetIncomeLossAvailableToCommonStockholdersBasic') # ?
 
       when 'Preferred Dividends'
       when 'Income Available to Common Excl. Extra Items'
@@ -78,41 +99,79 @@ namespace :si do
       when 'Normalized Income Avail to Common'
       when 'Basic Normalized EPS'
       when 'Diluted Normalized EPS'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'EarningsPerShareDiluted')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'EarningsPerShareBasicAndDiluted')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'EarningsPerShareBasic')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'IncomeLossFromContinuingOperationsPerBasicAndDilutedShare')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'IncomeLossFromContinuingOperationsPerBasicShare')
+
       when 'Cash & Equivalents'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'CashAndCashEquivalentsAtCarryingValue')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'Cash')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'CashAndCashEquivalentsFairValueDisclosure')
+
       when 'Short Term Investments'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'ShortTermInvestments')
+
       when 'Cash and Short Term Investments'
-      when 'Accounts Receivable - Trade, Net'
+      when 'Accounts Receivable - Trade, Net' # ?
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AccountsReceivableNet')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AccountsReceivableNetCurrent')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'ReceivablesNetCurrent')
+
       when 'Receivables - Other'
-      when 'Total Receivables, Net'
+      when 'Total Receivables, Net' # ?
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AccountsReceivableNet')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AccountsReceivableNetCurrent')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'ReceivablesNetCurrent')
+
       when 'Total Inventory'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'InventoryNet')
+
       when 'Prepaid Expenses'
       when 'Other Current Assets, Total'
       when 'Total Current Assets'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'CashAndCashEquivalentsAtCarryingValue')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AssetsCurrent')
+
       when 'Property/Plant/Equipment, Total - Gross'
       when 'Accumulated Depreciation, Total'
       when 'Goodwill, Net'
       when 'Intangibles, Net'
       when 'Long Term Investments'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'LongTermInvestments')
+
       when 'Other Long Term Assets, Total'
       when 'Total Assets'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'Assets')
+
       when 'Accounts Payable'
       when 'Accrued Expenses'
       when 'Notes Payable/Short Term Debt'
       when 'Current Port. of LT Debt/Capital Leases'
       when 'Other Current liabilities, Total'
       when 'Total Current Liabilities'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'LiabilitiesCurrent')
+
       when 'Long Term Debt'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'LongTermDebt')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'LongTermDebtAndCapitalLeaseObligations')
+
       when 'Capital Lease Obligations'
       when 'Total Long Term Debt'
       when 'Total Debt'
       when 'Deferred Income Tax'
       when 'Other Liabilities, Total'
       when 'Total Liabilities'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'Liabilities')
+
       when 'Redeemable Preferred Stock, Total'
       when 'Preferred Stock - Non Redeemable, Net'
       when 'Common Stock, Total'
       when 'Additional Paid-In Capital'
       when 'Retained Earnings (Accumulated Deficit)'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'RetainedEarningsAccumulatedDeficit')
+
       when 'Treasury Stock - Common'
       when 'Other Equity, Total'
       when 'Total Equity'
@@ -126,16 +185,27 @@ namespace :si do
       when 'Non-Cash Items'
       when 'Changes in Working Capital'
       when 'Cash from Operating Activities'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInOperatingActivities')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations')
+
       when 'Capital Expenditures'
       when 'Other Investing Cash Flow Items, Total'
       when 'Cash from Investing Activities'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInInvestingActivities')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInInvestingActivitiesContinuingOperations')
+
       when 'Financing Cash Flow Items'
       when 'Total Cash Dividends Paid'
       when 'Issuance (Retirement) of Stock, Net'
       when 'Issuance (Retirement) of Debt, Net'
       when 'Cash from Financing Activities'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInFinancingActivities')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'NetCashProvidedByUsedInFinancingActivitiesContinuingOperations')
+
       when 'Foreign Exchange Effects'
       when 'Net Change in Cash'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'CashAndCashEquivalentsPeriodIncreaseDecrease')
+
       when 'Cash Interest Paid, Supplemental'
       when 'Cash Taxes Paid, Supplemental'
 
