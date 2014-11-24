@@ -17,7 +17,8 @@
   </thead>
   <tbody>
     <tr><td>股票</td><td><%= Stock.all.size %></td></tr>
-    <tr><td>財報</td><td><%= Statement.all.size %></td></tr>
+    <% st_size = Statement.all.size %>
+    <tr><td>財報</td><td><%= st_size %>（約 <%= st_size * 3.3 / 1000 %> GB）</td></tr>
     <tr><td>XBRL名稱</td><td><%= Item.all.size %></td></tr>
     <tr><td>標準財報欄位</td><td><%= StandardItem.all.size %></td></tr>
     <tr><td>XBRL名稱 - 股票 配對</td><td><%= ItemStockPair.all.size %></td></tr>

@@ -32,6 +32,7 @@ namespace :si do
 
       when 'Gross Profit'
         si.xbrl_names.find_or_create_by(xbrl_name: 'GrossProfit')
+
       when 'Selling/General/Admin. Expenses, Total'
       when 'Research & Development'
       when 'Depreciation/Amortization'
@@ -112,6 +113,7 @@ namespace :si do
 
       when 'Short Term Investments'
         si.xbrl_names.find_or_create_by(xbrl_name: 'ShortTermInvestments')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'AvailableForSaleSecuritiesCurrent')
 
       when 'Cash and Short Term Investments'
       when 'Accounts Receivable - Trade, Net' # ?

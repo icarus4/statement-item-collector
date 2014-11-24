@@ -1,13 +1,8 @@
-<h2>List of Standard Items</h2>
+<h2>Google Finance 標準財報欄位列表</h2>
+
 <hr>
-<h3>Statistics:</h3>
-<ul>
-  <li>Parsed stocks count: <%= Stock.all.size %></li>
-  <li>Parsed statements count: <%= Statement.all.size %></li>
-  <li>XBRL items count: <%= Item.all.size %></li>
-</ul>
-<hr>
-<p>Exactly matched XBRL names 說明: <br>某股票的某季財報其 Standard Item 在 Google Finance 的數值與對應的 XBRL 檔案做比較，若 XBRL 只找到唯一的一個 element，則此 element 即為 exactly matched element，element name 即為 exactly matched XBRL name</p>
+
+<p>Exactly matched XBRL names（A區）說明: <br>某股票的某季財報其 Standard Item 在 Google Finance 的數值與對應的 XBRL 檔案做比較，若 XBRL 只找到唯一的一個 element，則此 element 即為 exactly matched element，element name 即為 exactly matched XBRL name</p>
 <p>Coverage ratio 說明：<br>利用已知的可能 xbrl 名稱（人工決定）去 parse 所有年報的 xbrl 檔案，再與 Google Finance 的值做比對，能正確抓出數值的財報比例。</p>
 <hr>
 <h3>Results</h3>
@@ -15,8 +10,8 @@
   <thead>
     <tr>
       <th>Standard Item Name (from Google Finance)</th>
-      <th>Number of <span style="color: red">exactly</span> matched XBRL names</th>
-      <th>Number of total XBRL names</th>
+      <th>A 區 xbrl 名稱總數</th>
+      <th>A+B 區 xbrl 名稱總數</th>
       <th>Coverage ratio</th>
     </tr>
   </thead>
