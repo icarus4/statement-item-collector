@@ -98,6 +98,6 @@ class Item < ActiveRecord::Base
 
   # acts_as_tree is to replace self join by gem of closure_tree
   # acts_as_tree should be put at bottom of class
-  acts_as_tree dependent: :destroy
+  # acts_as_tree dependent: :destroy
 
 end

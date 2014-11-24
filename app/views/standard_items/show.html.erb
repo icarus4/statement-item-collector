@@ -39,12 +39,14 @@
 <h4>此區可能為 <%= @si.name %> 對應之 XBRL 名稱，但包含較多非正確對應的 XBRL 名稱</h4>
 <table class="table table-striped table-condensed">
   <thead>
+    <th>id</th>
     <th>XBRL名稱</th>
     <th>含此XBRL名稱之股票總數</th>
   </thead>
   <tbody style="font-family: Verdana">
   <% @not_exactly_matched_items.each do |item| %>
     <tr>
+      <td><%= item.id %></td>
       <td>
         <% if item.namespace != 'us-gaap' %><%= "#{item.namespace}:" %><% end %>
         <%= link_to "#{item.name}", item_path(item), target: '_blank' %>

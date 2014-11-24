@@ -11,6 +11,7 @@
 #  coverage_ratio              :float
 #  created_at                  :datetime
 #  updated_at                  :datetime
+#  value_unmatch_count         :integer
 #
 
 class CoverageStat < ActiveRecord::Base
