@@ -59,7 +59,14 @@ namespace :si do
       when 'Unusual Expense (Income)'
       when 'Other Operating Expenses, Total'
       when 'Total Operating Expense'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'CostsAndExpenses')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'OperatingExpenses')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'GeneralAndAdministrativeExpense')
+        si.xbrl_names.find_or_create_by(xbrl_name: 'OperatingCostsAndExpenses')
+
       when 'Operating Income'
+        si.xbrl_names.find_or_create_by(xbrl_name: 'OperatingIncomeLoss')
+
       when 'Interest Income(Expense), Net Non-Operating'
       when 'Gain (Loss) on Sale of Assets'
       when 'Other, Net'
